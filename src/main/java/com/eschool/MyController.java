@@ -41,7 +41,7 @@ public class MyController {
 	@Autowired
 	UserRepository urepo;
 	@Autowired
-	EventRepo erepo;
+	EventRepository erepo;
 	
 	
 	@GetMapping("/")
@@ -130,7 +130,7 @@ public class MyController {
 	
 	@PutMapping("updateUser")
 	@CrossOrigin
-	public String updateUser(@ModelAttribute User user, @RequestHeader("Authorization") String authorizationHeader, @RequestParam("file")Part file) {
+	public ResponseEntity<Object> updateUser(@ModelAttribute User user, @RequestHeader("Authorization") String authorizationHeader, @RequestParam("file")Part file) {
 		
 		String message="";
 		String email="";
@@ -287,8 +287,129 @@ public class MyController {
         
 		
        
-		return message;
+		Map<String, String> data = new HashMap();
+        data.put("token", message);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//-------------------------------------------POST MAPING FOR SAME UPDATE USER IF USER SENDS A NON MULTIPART REQUEST-----------------------------------------------------------
+	
+	@PostMapping("updateUser")
+	@CrossOrigin
+	public ResponseEntity<Object> updateUser(@RequestBody User user, @RequestHeader("Authorization") String authorizationHeader) {
+		
+		String message="";
+		String email="";
+		
+		
+		
+		
+        System.out.println(authorizationHeader);// token from header displayed on console
+        
+        
+        //The code to decode the JWT token sent by client
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
 
+            System.out.println(jwtToken);
+
+            try {
+    
+                 Base64.Decoder decoder= Base64.getUrlDecoder();
+                 String chunks []= jwtToken.split("\\.");
+                 
+                 String header= new String(decoder.decode(chunks[0]));
+                 String payload= new String(decoder.decode(chunks[1]));
+
+                 System.out.println(header);
+                 
+                 System.out.println(payload);
+                 ObjectMapper mapper= new ObjectMapper();
+                 Map<String, String> map=mapper.readValue(payload, Map.class);
+                 
+                 System.out.println("this is our email");
+                System.out.println(map.get("email"));
+                
+                email=map.get("email");    //getting email from token in a string variable
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Failed to decode JWT: " + e.getMessage());
+            }
+        }
+        
+        User existingUser=urepo.findByEmail(email);
+        
+        if (existingUser != null) {
+        	
+        	if(user.getFull_name()!=null) {
+            existingUser.setFull_name(user.getFull_name());  //this is a mandatory field, if client sends it null at the time of updation, we do not set null as field value.
+        	}
+        	
+        	if(user.getDob()!=null) {
+            existingUser.setDob(user.getDob());
+        	}
+        	
+        	if(user.getMobile_num()!=null) {
+            existingUser.setMobile_num(user.getMobile_num());
+        	}
+        	
+        	if(user.getGender()!=null) {
+            existingUser.setGender(user.getGender());
+        	}
+        	
+            existingUser.setWhatsapp_num(user.getWhatsapp_num());
+            
+        	if(user.getPassword()!=null) {
+            existingUser.setPassword(user.getPassword());
+        	}
+            existingUser.setBlood_grp(user.getBlood_grp());
+            existingUser.setOccupation(user.getOccupation());
+            existingUser.setQualification(user.getQualification());
+            existingUser.setAddress_linep(user.getAddress_linep());
+            existingUser.setAddress_lines(user.getAddress_lines());
+            
+        	if(user.getCountry()!=null) {
+            existingUser.setCountry(user.getCountry());
+        	}
+        	
+            existingUser.setState(user.getState());
+            
+        	if(user.getCity()!=null) {
+            existingUser.setCity(user.getCity());
+        	}
+        	
+            existingUser.setDiksha_dt(user.getDiksha_dt());
+            existingUser.setAge(user.getAge());
+            existingUser.setPincode(user.getPincode());
+
+            urepo.save(existingUser);
+            
+             message="user updated";
+        }
+    		
+
+    		 else {
+            throw new IllegalArgumentException("User not found");
+           
+        }
+        
+		
+		
+        
+		
+       
+        Map<String, String> data = new HashMap();
+        data.put("token", message);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 	
 		
@@ -300,7 +421,7 @@ public class MyController {
 	
 	@PostMapping("saveEvent")
 	@CrossOrigin
-	public String saveEvent(@RequestBody Event event) {
+	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 		
 		String message = "";
 		
@@ -311,15 +432,22 @@ public class MyController {
 		catch(Exception e) {
 			message=e.getMessage();		}
 		
-		return message;
-	}
+		Map<String, String> data = new HashMap();
+        data.put("token", message);
+        return new ResponseEntity<>(data, HttpStatus.OK);	}
+	
+	
+	
+	
+	
+	
 	
 	
 	//-------------------TO APPROVE OR REJECT A USER'S APPLICATION TO SIGNUP----------------------------------------------------------
 	
 
 	@PostMapping("changeStatus")
-	public String changeStatus(@RequestBody User user) {
+	public ResponseEntity<Object> changeStatus(@RequestBody User user) {
 		
 		String email=user.getEmail();
 		
@@ -332,8 +460,77 @@ public class MyController {
             existingUser.setStatus(1);
             urepo.save(existingUser);     
  }
-           return message;	
+            Map<String, String> data = new HashMap();
+             data.put("token", message);
+              return new ResponseEntity<>(data, HttpStatus.OK);		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	//--------------------------------TO EDIT EVENT----------------------------------------------------------
+	
+	
+	@PutMapping("editEvent")
+	public ResponseEntity<Object> editEvent(@RequestParam("id")int id, @RequestBody Event event){
+		
+		String message="";
+		
+		Event existingEvent = erepo.findById(id);
+		
+		existingEvent.setEvent_location(event.getEvent_location());
+		existingEvent.setEvent_name(event.getEvent_name());
+		existingEvent.setEvent_type(event.getEvent_type());
+		existingEvent.setEnd_date(event.getEnd_date());
+		existingEvent.setListed_by(event.getListed_by());
+		existingEvent.setStart_date(event.getStart_date());
+		existingEvent.setEvent_status(event.getEvent_status());
+		existingEvent.setOther(event.getOther());
+
+
+		erepo.save(existingEvent);
+		
+		
+		
+		Map<String, String> data = new HashMap();
+        data.put("token", message);
+         return new ResponseEntity<>(data, HttpStatus.OK);
 		
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	//-----------------------------FETCH EVENT INFO----------------------------------------------------------------------------------------------------------
+
+	@GetMapping("fetchEvent/{ids}")
+	public Event fetchEvent(@RequestParam("ids") String ids) {
+		
+		int id=Integer.parseInt(ids);
+		
+		Event event= erepo.findById(id);
+		
+		return event;
+		
+		
+		
+	}
+	
+	
+	
+	
+
 }
