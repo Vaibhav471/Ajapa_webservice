@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -472,8 +473,7 @@ public class MyController {
 	
 	
 	
-	//--------------------------------TO EDIT EVENT----------------------------------------------------------
-	
+	//-------------------------------------------TO EDIT EVENT----------------------------------------------------------
 	
 	@PutMapping("editEvent")
 	public ResponseEntity<Object> editEvent(@RequestParam("id")int id, @RequestBody Event event){
@@ -512,19 +512,17 @@ public class MyController {
 	
 	
 	
-	
 
 	//-----------------------------FETCH EVENT INFO----------------------------------------------------------------------------------------------------------
 
 	@GetMapping("fetchEvent/{ids}")
-	public Event fetchEvent(@RequestParam("ids") String ids) {
+	public Event fetchEvent( @PathVariable String ids) {
 		
 		int id=Integer.parseInt(ids);
 		
 		Event event= erepo.findById(id);
 		
 		return event;
-		
 		
 		
 	}
