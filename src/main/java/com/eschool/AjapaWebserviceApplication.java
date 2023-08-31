@@ -21,7 +21,7 @@ public class AjapaWebserviceApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				// TODO Auto-generated method stub
-				registry.addMapping("/**").allowedOrigins("*");
+				registry.addMapping("/**").allowedMethods("*").allowedOrigins("*");
 			}
 		};
 		

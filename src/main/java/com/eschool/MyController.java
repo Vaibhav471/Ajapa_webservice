@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eschool.beans.Event;
 import com.eschool.beans.User;
@@ -36,7 +37,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 
 @RestController
-@CrossOrigin(maxAge = 3600)
 public class MyController {
 	
 	@Autowired
@@ -55,7 +55,6 @@ public class MyController {
 	//--------------------------------SIGNUP-------------------------------------------------------
 	
 	@PostMapping("signup")
-	@CrossOrigin
 	public ResponseEntity<Object> saveUser(@ModelAttribute User user) {
 		
 		String message="";
@@ -77,6 +76,8 @@ public class MyController {
         data.put("msg",message);
         return new ResponseEntity<>(data, HttpStatus.OK);
 		
+		
+		
 	}
 	
 	
@@ -85,7 +86,6 @@ public class MyController {
 	//--------------------------------LOGIN------------------------------------------------------------------------------------------------------
 
 	@PostMapping("login")
-	@CrossOrigin
 	public ResponseEntity<Object> login(@RequestBody User user) {
 		
 		String token_message="";
@@ -129,9 +129,9 @@ public class MyController {
 	
 	//---------------------------------UPDATE USER----------------------------------------------------------------------------------------------------------------------
 	
-	@PutMapping("updateUser")
-	@CrossOrigin
-	public ResponseEntity<Object> updateUser(@ModelAttribute User user, @RequestHeader("Authorization") String authorizationHeader, @RequestParam("file")Part file) {
+	@PostMapping("updateUser1")
+			
+	public ResponseEntity<Object> updateUser(@RequestBody User user, @RequestParam("file")Part file, @RequestHeader("Authorization") String authorizationHeader) {
 		
 		String message="";
 		String email="";
@@ -141,6 +141,7 @@ public class MyController {
 		
 		
         System.out.println(authorizationHeader);// token from header displayed on console
+        
         
         
         //The code to decode the JWT token sent by client
@@ -303,8 +304,7 @@ public class MyController {
 	
 	//-------------------------------------------POST MAPING FOR SAME UPDATE USER IF USER SENDS A NON MULTIPART REQUEST-----------------------------------------------------------
 	
-	@PostMapping("updateUser")
-	@CrossOrigin
+	@PutMapping("updateUser")
 	public ResponseEntity<Object> updateUser(@RequestBody User user, @RequestHeader("Authorization") String authorizationHeader) {
 		
 		String message="";
@@ -411,6 +411,9 @@ public class MyController {
         Map<String, String> data = new HashMap();
         data.put("token", message);
         return new ResponseEntity<>(data, HttpStatus.OK);
+        
+		
+        
     }
 	
 		
@@ -421,8 +424,9 @@ public class MyController {
 	
 	
 	@PostMapping("saveEvent")
-	@CrossOrigin
-	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
+	
+	public ResponseEntity<Object> saveEvent(@ModelAttribute Event event) {
+		
 		
 		String message = "";
 		
@@ -435,7 +439,10 @@ public class MyController {
 		
 		Map<String, String> data = new HashMap();
         data.put("token", message);
-        return new ResponseEntity<>(data, HttpStatus.OK);	}
+        return new ResponseEntity<>(data, HttpStatus.OK);	
+        
+		
+        }
 	
 	
 	
@@ -447,10 +454,9 @@ public class MyController {
 	//-------------------TO APPROVE OR REJECT A USER'S APPLICATION TO SIGNUP----------------------------------------------------------
 	
 
-	@PostMapping("changeStatus")
-	public ResponseEntity<Object> changeStatus(@RequestBody User user) {
+	@PostMapping("changeStatus/{email}")
+	public ResponseEntity<Object> changeStatus(@PathVariable String email) {
 		
-		String email=user.getEmail();
 		
 		String message="";
 		
@@ -524,6 +530,68 @@ public class MyController {
 		
 		return event;
 		
+		
+	}
+	
+	@PostMapping("saveImage")
+	public String saveImage(@RequestParam("file") Part file) {
+		
+		String message="";
+		
+		Connection connection=null;
+		
+		InputStream photo=null;
+
+		Part filePart = file;
+
+		if (filePart != null) 
+		{
+			System.out.println("test1");
+
+			try {
+		photo = filePart.getInputStream();
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		
+		System.out.println("test2");
+
+			}
+			catch(Exception e) {
+				System.out.println(e.getMessage());
+
+				
+			}
+		}
+		
+
+		
+		
+		try {
+		
+		System.out.println("test3");
+
+		String query="INSERT INTO user_image (email, image) VALUES (?,?)";  //sql query which inserts image into db and if image pre exists, it updated the old image with the new one 
+		PreparedStatement statement=connection.prepareStatement(query);
+		statement.setString(1,"vaibhav1@gmail.com");
+		statement.setBlob(2,photo);
+
+		
+		System.out.println("test6");
+
+
+		statement.executeUpdate();
+		message="data saved successfully";
+		
+		}
+		catch(Exception e) {
+			System.out.println("this is sql error");
+			System.out.println(e.getMessage());
+			message=e.getMessage();
+			
+			
+		}
+		
+		return message;
 		
 	}
 	
