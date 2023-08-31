@@ -736,6 +736,57 @@ String path=context.getRealPath("/")+"\\images";
 		return retrive_photo;
 		
 	}
+	
+	
+	
+	//--------------------------------------------------------------------------------------------------------------
+	
+	@GetMapping("getEventId")
+	public ResponseEntity<Object> getEventId(@PathVariable("email")String email){
+		
+		String message="";
+		int eventId=0;
+		
+		try {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		
+		 // Prepare the SQL query
+        String query = "SELECT MAX(event_id) as max_event_id FROM event WHERE listed_by = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+		preparedStatement.setString(1,email);
+
+        // Execute the query
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Process the result
+        if (resultSet.next()) {
+             eventId = resultSet.getInt("event_id");
+           
+        } else {
+            System.out.println("No events found.");
+        }
+
+        // Close resources
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+    } 
+		
+		catch (Exception e) {
+        e.printStackTrace();
+    }
+
+		
+		
+
+		
+		
+		Map<String, Integer> data = new HashMap();
+	    data.put("message", eventId);
+	     return new ResponseEntity<>(data, HttpStatus.OK);
+	}
 		
 	
 	
