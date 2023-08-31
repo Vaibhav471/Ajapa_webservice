@@ -1,16 +1,28 @@
 package com.eschool;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.hibernate.query.sqm.tree.expression.SqmFieldLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
 
@@ -43,6 +56,8 @@ public class MyController {
 	UserRepository urepo;
 	@Autowired
 	EventRepository erepo;
+	@Autowired
+	ServletContext context;
 	
 	
 	@GetMapping("/")
@@ -55,7 +70,7 @@ public class MyController {
 	//--------------------------------SIGNUP-------------------------------------------------------
 	
 	@PostMapping("signup")
-	public ResponseEntity<Object> saveUser(@ModelAttribute User user) {
+	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		
 		String message="";
 
@@ -86,6 +101,7 @@ public class MyController {
 	//--------------------------------LOGIN------------------------------------------------------------------------------------------------------
 
 	@PostMapping("login")
+	
 	public ResponseEntity<Object> login(@RequestBody User user) {
 		
 		String token_message="";
@@ -425,7 +441,7 @@ public class MyController {
 	
 	@PostMapping("saveEvent")
 	
-	public ResponseEntity<Object> saveEvent(@ModelAttribute Event event) {
+	public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 		
 		
 		String message = "";
@@ -534,13 +550,95 @@ public class MyController {
 	}
 	
 	@PostMapping("saveImage")
-	public String saveImage(@RequestParam("file") Part file) {
+	public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization")String authorizationHeader) {
+		
+		String email="";
+		String message="";
+		
+		
+		 // The code to decode the JWT token sent by client
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
+
+            System.out.println(jwtToken);
+
+            try {
+    
+                Base64.Decoder decoder= Base64.getUrlDecoder();
+                 String chunks []= jwtToken.split("\\.");
+                 
+                 String header= new String(decoder.decode(chunks[0]));
+                 String payload= new String(decoder.decode(chunks[1]));
+
+                 System.out.println(header);
+                 
+                 System.out.println(payload);
+                 ObjectMapper mapper= new ObjectMapper();
+                 Map<String, String> map=mapper.readValue(payload, Map.class);
+                 
+                 System.out.println("this is our email");
+                System.out.println(map.get("email"));
+               
+                 email=map.get("email");    //getting email from token in a string variable
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Failed to decode JWT: " + e.getMessage());
+                message=e.getMessage();
+            }
+        }
+
+		
+//String imageName=new java.util.Date().toString()+".jpg";
+String path=context.getRealPath("/")+"\\images";
+	File fl=new File(path);
+	if(!fl.exists())
+	{
+		fl.mkdir();
+	}
+	System.out.println("Image path "+path);
+	Path root=Paths.get(path+"\\"+email+".jpg");
+	
+	
+	
+	try {
+		
+		if (Files.exists(root)) {
+	        Files.delete(root); // Delete the existing image file
+		}
+		
+		
+		Files.copy(file.getInputStream(),root);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		System.out.print(e.getMessage());
+		
+		message=e.getMessage();
+	}
+		
+		
+		
+		
+		
+	Map<String, String> data = new HashMap();
+    data.put("message", message);
+     return new ResponseEntity<>(data, HttpStatus.OK);		
+	}
+	
+	
+	
+	
+	@PostMapping("saveEventD")
+	public String saveEventDocument(@RequestParam("file") Part file, @RequestParam("event_id") int event_id) {
+		
+		
+		
 		
 		String message="";
 		
 		Connection connection=null;
 		
-		InputStream photo=null;
+		InputStream doc=null;
 
 		Part filePart = file;
 
@@ -549,7 +647,7 @@ public class MyController {
 			System.out.println("test1");
 
 			try {
-		photo = filePart.getInputStream();
+		doc = filePart.getInputStream();
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
 		
@@ -570,10 +668,10 @@ public class MyController {
 		
 		System.out.println("test3");
 
-		String query="INSERT INTO user_image (email, image) VALUES (?,?)";  //sql query which inserts image into db and if image pre exists, it updated the old image with the new one 
+		String query="INSERT INTO event_doc (event_id, file) VALUES (?,?)";  //sql query which inserts image into db and if image pre exists, it updated the old image with the new one 
 		PreparedStatement statement=connection.prepareStatement(query);
-		statement.setString(1,"vaibhav1@gmail.com");
-		statement.setBlob(2,photo);
+		statement.setInt(1,event_id);
+		statement.setBlob(2,doc);
 
 		
 		System.out.println("test6");
@@ -594,6 +692,52 @@ public class MyController {
 		return message;
 		
 	}
+	
+	
+	@GetMapping("getImage/{email}")
+	public String getImage(@PathVariable("email")String email) {
+		
+		String retrive_photo="";
+		String name="";
+		
+		try {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		String query="select image from user_image where email=?";
+		PreparedStatement statement=connection.prepareStatement(query);
+		statement.setString(1,email);
+
+		ResultSet result=statement.executeQuery();
+		result.next();
+			 Blob blob = result.getBlob(1);
+			 // name=result.getString(2);
+
+			 
+			 if(blob!=null) {
+             InputStream inputStream = blob.getBinaryStream();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             byte[] buffer = new byte[4096];
+             int bytesRead = -1;                 
+             while ((bytesRead = inputStream.read(buffer)) != -1) {
+                 outputStream.write(buffer, 0, bytesRead);                  
+             }                 
+             byte[] imageBytes = outputStream.toByteArray();
+              retrive_photo = Base64.getEncoder().encodeToString(imageBytes);
+             inputStream.close();
+             outputStream.close();      
+			 }
+		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		
+		return retrive_photo;
+		
+	}
+		
+	
 	
 	
 	
