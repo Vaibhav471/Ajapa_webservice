@@ -144,182 +144,7 @@ public class MyController {
 	
 	
 	//---------------------------------UPDATE USER----------------------------------------------------------------------------------------------------------------------
-	
-	@PostMapping("updateUser1")
-			
-	public ResponseEntity<Object> updateUser(@RequestBody User user, @RequestParam("file")Part file, @RequestHeader("Authorization") String authorizationHeader) {
 		
-		String message="";
-		String email="";
-		
-		Connection connection=null;
-		
-		
-		
-        System.out.println(authorizationHeader);// token from header displayed on console
-        
-        
-        
-        //The code to decode the JWT token sent by client
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
-
-            System.out.println(jwtToken);
-
-            try {
-    
-                 Base64.Decoder decoder= Base64.getUrlDecoder();
-                 String chunks []= jwtToken.split("\\.");
-                 
-                 String header= new String(decoder.decode(chunks[0]));
-                 String payload= new String(decoder.decode(chunks[1]));
-
-                 System.out.println(header);
-                 
-                 System.out.println(payload);
-                 ObjectMapper mapper= new ObjectMapper();
-                 Map<String, String> map=mapper.readValue(payload, Map.class);
-                 
-                 System.out.println("this is our email");
-                System.out.println(map.get("email"));
-                
-                email=map.get("email");    //getting email from token in a string variable
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Failed to decode JWT: " + e.getMessage());
-            }
-        }
-        
-        User existingUser=urepo.findByEmail(email);
-        
-        if (existingUser != null) {
-        	
-        	if(user.getFull_name()!=null) {
-            existingUser.setFull_name(user.getFull_name());  //this is a mandatory field, if client sends it null at the time of updation, we do not set null as field value.
-        	}
-        	
-        	if(user.getDob()!=null) {
-            existingUser.setDob(user.getDob());
-        	}
-        	
-        	if(user.getMobile_num()!=null) {
-            existingUser.setMobile_num(user.getMobile_num());
-        	}
-        	
-        	if(user.getGender()!=null) {
-            existingUser.setGender(user.getGender());
-        	}
-        	
-            existingUser.setWhatsapp_num(user.getWhatsapp_num());
-            
-        	if(user.getPassword()!=null) {
-            existingUser.setPassword(user.getPassword());
-        	}
-            existingUser.setBlood_grp(user.getBlood_grp());
-            existingUser.setOccupation(user.getOccupation());
-            existingUser.setQualification(user.getQualification());
-            existingUser.setAddress_linep(user.getAddress_linep());
-            existingUser.setAddress_lines(user.getAddress_lines());
-            
-        	if(user.getCountry()!=null) {
-            existingUser.setCountry(user.getCountry());
-        	}
-        	
-            existingUser.setState(user.getState());
-            
-        	if(user.getCity()!=null) {
-            existingUser.setCity(user.getCity());
-        	}
-        	
-            existingUser.setDiksha_dt(user.getDiksha_dt());
-            existingUser.setAge(user.getAge());
-            existingUser.setPincode(user.getPincode());
-
-            urepo.save(existingUser);
-            
-             message="user updated";
-        }
-    		
-
-    		 else {
-            throw new IllegalArgumentException("User not found");
-           
-        }
-        
-		
-		
-        //the code to save a user's image, if image is already there and is to be updated, this code does the same
-        
-		InputStream photo=null;
-
-		Part filePart = file;
-
-		if (filePart != null) 
-		{
-			System.out.println("test1");
-
-			try {
-		photo = filePart.getInputStream();
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
-		
-		System.out.println("test2");
-
-			}
-			catch(Exception e) {
-				System.out.println(e.getMessage());
-
-				
-			}
-		}
-		
-
-		
-		
-		try {
-		
-		System.out.println("test3");
-
-		String query="INSERT INTO user_image (email, image) VALUES (?,?) ON DUPLICATE KEY UPDATE image =?";  //sql query which inserts image into db and if image pre exists, it updated the old image with the new one 
-		PreparedStatement statement=connection.prepareStatement(query);
-		statement.setString(1,email);
-		statement.setBlob(2,photo);
-		statement.setBlob(3,photo);
-
-		
-		System.out.println("test6");
-
-
-		statement.executeUpdate();
-		message="data saved successfully";
-		
-		}
-		catch(Exception e) {
-			System.out.println("this is sql error");
-			System.out.println(e.getMessage());
-			message=e.getMessage();
-			
-			
-		}
-        
-		
-       
-		Map<String, String> data = new HashMap();
-        data.put("token", message);
-        return new ResponseEntity<>(data, HttpStatus.OK);
-    }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//-------------------------------------------POST MAPING FOR SAME UPDATE USER IF USER SENDS A NON MULTIPART REQUEST-----------------------------------------------------------
-	
 	@PutMapping("updateUser")
 	public ResponseEntity<Object> updateUser(@RequestBody User user, @RequestHeader("Authorization") String authorizationHeader) {
 		
@@ -549,6 +374,9 @@ public class MyController {
 		
 	}
 	
+	
+	//----------------------------TO SAVE A USER'S IMAGE----------------------------------------------------------------------------------------------------------------
+	
 	@PostMapping("saveImage")
 	public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization")String authorizationHeader) {
 		
@@ -628,120 +456,58 @@ String path=context.getRealPath("/")+"\\images";
 	
 	
 	
+	//-----------------------------------------------TO SAVE EVENT RELATED DOCUMENTS-------------------------------------------------------------------------------------------------------------
+	
 	@PostMapping("saveEventD")
-	public String saveEventDocument(@RequestParam("file") Part file, @RequestParam("event_id") int event_id) {
-		
-		
-		
+	public ResponseEntity<Object> saveEventDocument(@RequestParam("file") Part file, @RequestParam("event_id") int event_id) {
 		
 		String message="";
 		
-		Connection connection=null;
 		
-		InputStream doc=null;
-
-		Part filePart = file;
-
-		if (filePart != null) 
+		String path=context.getRealPath("/")+"\\EventDoc";
+		File fl=new File(path);
+		if(!fl.exists())
 		{
-			System.out.println("test1");
-
-			try {
-		doc = filePart.getInputStream();
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
-		
-		System.out.println("test2");
-
-			}
-			catch(Exception e) {
-				System.out.println(e.getMessage());
-
-				
-			}
+			fl.mkdir();
 		}
+		System.out.println("Image path "+path);
+		Path root=Paths.get(path+"\\"+event_id+".jpg");
 		
-
 		
 		
 		try {
-		
-		System.out.println("test3");
-
-		String query="INSERT INTO event_doc (event_id, file) VALUES (?,?)";  //sql query which inserts image into db and if image pre exists, it updated the old image with the new one 
-		PreparedStatement statement=connection.prepareStatement(query);
-		statement.setInt(1,event_id);
-		statement.setBlob(2,doc);
-
-		
-		System.out.println("test6");
-
-
-		statement.executeUpdate();
-		message="data saved successfully";
-		
-		}
-		catch(Exception e) {
-			System.out.println("this is sql error");
-			System.out.println(e.getMessage());
+			
+			if (Files.exists(root)) {
+		        Files.delete(root); // Delete the existing image file
+			}
+			
+			
+			Files.copy(file.getInputStream(),root);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.print(e.getMessage());
+			
 			message=e.getMessage();
+		}
 			
 			
+			
+			
+			
+		Map<String, String> data = new HashMap();
+	    data.put("message", message);
+	     return new ResponseEntity<>(data, HttpStatus.OK);		
 		}
-		
-		return message;
-		
-	}
-	
-	
-	@GetMapping("getImage/{email}")
-	public String getImage(@PathVariable("email")String email) {
-		
-		String retrive_photo="";
-		String name="";
-		
-		try {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
-		String query="select image from user_image where email=?";
-		PreparedStatement statement=connection.prepareStatement(query);
-		statement.setString(1,email);
-
-		ResultSet result=statement.executeQuery();
-		result.next();
-			 Blob blob = result.getBlob(1);
-			 // name=result.getString(2);
-
-			 
-			 if(blob!=null) {
-             InputStream inputStream = blob.getBinaryStream();
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             byte[] buffer = new byte[4096];
-             int bytesRead = -1;                 
-             while ((bytesRead = inputStream.read(buffer)) != -1) {
-                 outputStream.write(buffer, 0, bytesRead);                  
-             }                 
-             byte[] imageBytes = outputStream.toByteArray();
-              retrive_photo = Base64.getEncoder().encodeToString(imageBytes);
-             inputStream.close();
-             outputStream.close();      
-			 }
-		
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		
-		return retrive_photo;
-		
-	}
 	
 	
 	
-	//--------------------------------------------------------------------------------------------------------------
 	
-	@GetMapping("getEventId")
+	
+	
+	
+	//--------------------------------------TO GET LAST EVENT'S ID BY EMAIL OF ADMIN------------------------------------------------------------------------
+	
+	@GetMapping("getEventId/{email}")
 	public ResponseEntity<Object> getEventId(@PathVariable("email")String email){
 		
 		String message="";
@@ -752,7 +518,7 @@ String path=context.getRealPath("/")+"\\images";
 		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
 		
 		 // Prepare the SQL query
-        String query = "SELECT MAX(event_id) as max_event_id FROM event WHERE listed_by = ?";
+        String query = "SELECT MAX(event_id) as event_id FROM event WHERE listed_by = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 
 		preparedStatement.setString(1,email);
