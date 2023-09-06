@@ -1,6 +1,7 @@
 package com.eschool;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +10,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eschool.beans.Event;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.Part;
 
@@ -37,6 +42,9 @@ public class EventController {
 	
 	@Autowired
 	ServletContext context;
+	
+	@PersistenceContext
+    private EntityManager entityManager; // Inject the EntityManager
 	
 	
 	
@@ -200,6 +208,18 @@ public class EventController {
 			Map<String, Integer> data = new HashMap();
 		    data.put("message", eventId);
 		     return new ResponseEntity<>(data, HttpStatus.OK);
+		}
+		
+		@GetMapping("getEvents/{start}/{end}")
+		public List<Event> getUsers(@PathVariable int start, @PathVariable int end) {
+		    List<Event> events = entityManager.createQuery("from Event", Event.class).getResultList();
+		    
+		    if (start >= 0 && end <= events.size() && start <= end) {
+		        return events.subList(start, end);
+		    } else {
+		        // Handle invalid start and end values, e.g., return an empty list or an error response.
+		        return Collections.emptyList();
+		    }
 		}
 
 }
