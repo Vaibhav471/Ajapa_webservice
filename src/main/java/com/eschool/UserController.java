@@ -42,17 +42,19 @@ public class UserController {
 	UserRepository urepo;
 	@Autowired
 	ServletContext context;
+	@PersistenceContext
+	private EntityManager entityManager;
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		message="";
 		Map<String, String> data = new HashMap<>();
 		try {
 			urepo.save(user);
-			message = "Data saved successfully";
-			data.put("msg", message);
+			message = "Data saved successfully";			
 		} catch (Exception e) {
 			message = e.getMessage();
 		}		
+		data.put("msg", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 	// --------------------------------LOGIN------------------------------------------------------------------------------------------------------
@@ -110,29 +112,21 @@ public class UserController {
 				System.out.println("Failed to decode JWT: " + e.getMessage());
 			}
 		}
-
 		User existingUser = urepo.findByEmail(email);
-
 		if (existingUser != null) {
-
 			if (user.getFull_name() != null) {
 				existingUser.setFull_name(user.getFull_name()); // this is a mandatory field, if client sends it null at the time of updation, we do not set null as fiel value.
 			}
-
 			if (user.getDob() != null) {
 				existingUser.setDob(user.getDob());
 			}
-
 			if (user.getMobile_num() != null) {
 				existingUser.setMobile_num(user.getMobile_num());
 			}
-
 			if (user.getGender() != null) {
 				existingUser.setGender(user.getGender());
 			}
-
 			existingUser.setWhatsapp_num(user.getWhatsapp_num());
-
 			if (user.getPassword() != null) {
 				existingUser.setPassword(user.getPassword());
 			}
@@ -141,13 +135,10 @@ public class UserController {
 			existingUser.setQualification(user.getQualification());
 			existingUser.setAddress_linep(user.getAddress_linep());
 			existingUser.setAddress_lines(user.getAddress_lines());
-
 			if (user.getCountry() != null) {
 				existingUser.setCountry(user.getCountry());
 			}
-
 			existingUser.setState(user.getState());
-
 			if (user.getCity() != null) {
 				existingUser.setCity(user.getCity());
 			}
