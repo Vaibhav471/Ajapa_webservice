@@ -37,108 +37,74 @@ import jakarta.servlet.ServletContext;
 
 @RestController
 public class UserController {
-
+	String message;
 	@Autowired
 	UserRepository urepo;
-
 	@Autowired
 	ServletContext context;
-	
 	@PersistenceContext
-    private EntityManager entityManager; // Inject the EntityManager
-
-	@GetMapping("/")
-	public String index() {
-
-		return "This Is Index Page Of AJAPA (0)";
-	}
-
-	// --------------------------------SIGNUP-------------------------------------------------------
-
+	private EntityManager entityManager;
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
-
-		String message = "";
-
+		message="";
+		Map<String, String> data = new HashMap<>();
 		try {
 			urepo.save(user);
-
-			message = "Data saved successfully";
+			message = "Data saved successfully";			
 		} catch (Exception e) {
-
 			message = e.getMessage();
-
-		}
-
-		Map<String, String> data = new HashMap();
+		}		
 		data.put("msg", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
-
 	}
-
 	// --------------------------------LOGIN------------------------------------------------------------------------------------------------------
-
 	@PostMapping("login")
-
 	public ResponseEntity<Object> login(@RequestBody User user) {
-
 		String token_message = "";
-
+		Map<String, String> data = new HashMap<>();
+		try
+		{
 		User u = urepo.findByEmailAndPassword(user.getEmail(), user.getPassword());
-
 		if (u != null) {
-
 			// The code to convert user information into JWT token
 			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
 					.claim("mobile_number", u.getMobile_num()).claim("id", u.getId())
-
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
-
 			token_message = token;
-
 		} else {
 			token_message = "Invalid User information (0)";
 		}
-
-		Map<String, String> data = new HashMap();
+		}
+		catch(Exception e)
+		{
+			token_message=e.getMessage();
+		}
 		data.put("token", token_message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
 	// ---------------------------------UPDATE USER----------------------------------------------------------------------------------------------------------------------
-
 	@PutMapping("updateUser")
-	public ResponseEntity<Object> updateUser(@RequestBody User user,
-			@RequestHeader("Authorization") String authorizationHeader) {
-
+	public ResponseEntity<Object> updateUser(@RequestBody User user,@RequestHeader("Authorization") String authorizationHeader) {
 		String message = "";
 		String email = "";
-
-		System.out.println(authorizationHeader);// token from header displayed on console The code to decode the JWT token sent by client
+		//System.out.println(authorizationHeader);// token from header displayed on console The code to decode the JWT token sent by client
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
-
-			System.out.println(jwtToken);
-
+			//System.out.println(jwtToken);
 			try {
-
 				Base64.Decoder decoder = Base64.getUrlDecoder();
 				String chunks[] = jwtToken.split("\\.");
-
 				String header = new String(decoder.decode(chunks[0]));
 				String payload = new String(decoder.decode(chunks[1]));
-
 				System.out.println(header);
-
 				System.out.println(payload);
 				ObjectMapper mapper = new ObjectMapper();
 				Map<String, String> map = mapper.readValue(payload, Map.class);
-
 				System.out.println("this is our email");
 				System.out.println(map.get("email"));
-
 				email = map.get("email"); // getting email from token in a string variable
 
 			} catch (Exception e) {
@@ -146,29 +112,21 @@ public class UserController {
 				System.out.println("Failed to decode JWT: " + e.getMessage());
 			}
 		}
-
 		User existingUser = urepo.findByEmail(email);
-
 		if (existingUser != null) {
-
 			if (user.getFull_name() != null) {
 				existingUser.setFull_name(user.getFull_name()); // this is a mandatory field, if client sends it null at the time of updation, we do not set null as fiel value.
 			}
-
 			if (user.getDob() != null) {
 				existingUser.setDob(user.getDob());
 			}
-
 			if (user.getMobile_num() != null) {
 				existingUser.setMobile_num(user.getMobile_num());
 			}
-
 			if (user.getGender() != null) {
 				existingUser.setGender(user.getGender());
 			}
-
 			existingUser.setWhatsapp_num(user.getWhatsapp_num());
-
 			if (user.getPassword() != null) {
 				existingUser.setPassword(user.getPassword());
 			}
@@ -177,13 +135,10 @@ public class UserController {
 			existingUser.setQualification(user.getQualification());
 			existingUser.setAddress_linep(user.getAddress_linep());
 			existingUser.setAddress_lines(user.getAddress_lines());
-
 			if (user.getCountry() != null) {
 				existingUser.setCountry(user.getCountry());
 			}
-
 			existingUser.setState(user.getState());
-
 			if (user.getCity() != null) {
 				existingUser.setCity(user.getCity());
 			}
