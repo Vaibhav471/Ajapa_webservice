@@ -1,13 +1,16 @@
 package com.eschool;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContext;
 
 @RestController
@@ -38,6 +43,9 @@ public class UserController {
 
 	@Autowired
 	ServletContext context;
+	
+	@PersistenceContext
+    private EntityManager entityManager; // Inject the EntityManager
 
 	@GetMapping("/")
 	public String index() {
@@ -287,5 +295,21 @@ public class UserController {
 		data.put("message", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	
+	//------------------------------TO GET ALL USERS IN A PAGINATION FORMAT-------------------------------------------------------------
+	
+	@GetMapping("getUsers/{start}/{end}")
+	public List<User> getUsers(@PathVariable int start, @PathVariable int end) {
+	    List<User> users = entityManager.createQuery("from User", User.class).getResultList();
+	    
+	    if (start >= 0 && end <= users.size() && start <= end) {
+	        return users.subList(start, end);
+	    } else {
+	        // Handle invalid start and end values, e.g., return an empty list or an error response.
+	        return Collections.emptyList();
+	    }
+	}
 
+	
 }
