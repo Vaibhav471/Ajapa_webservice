@@ -13,215 +13,198 @@ import jakarta.persistence.Table;
 public class Travel {
 
     @Id
-    private int travelId;
+    private int travel_id;
 
-    private int eventId;
+    private int event_id;
 
-    private int userId;
+    private int user_id;
 
-    private String fromCity;
+    private String from_city;
 
-    private String fromCountry;
+    private String from_country;
 
-    private Date arrivalDate;
+    private Date arrival_date;
 
-    private Date arrivalTime;
+    private String arrival_time;
 
-    private String arrivalModeOfTransport;
+    private String arrival_mode_of_transport;
 
-    private String arrivalTrainNumber;
+    private String arrival_train_number;
 
-    private String arrivalTrainName;
+    private String arrival_train_name;
 
-    private Date departureDate;
+    private Date departure_date;
 
-    private Date departureTime;
+    private String departure_time;
 
-    private String departureModeOfTransport;
+    private String departure_mode_of_transport;
 
-    private String departureTrainNumber;
+    private String departure_train_number;
 
-    private String departureTrainName;
-
-
-    public Travel() {
-    	
-    }
-
-
-	public Travel(int travelId, int eventId, int userId, String fromCity, String fromCountry, Date arrivalDate,
-			Date arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber, String arrivalTrainName,
-			Date departureDate, Date departureTime, String departureModeOfTransport, String departureTrainNumber,
-			String departureTrainName) {
-		this.travelId = travelId;
-		this.eventId = eventId;
-		this.userId = userId;
-		this.fromCity = fromCity;
-		this.fromCountry = fromCountry;
-		this.arrivalDate = arrivalDate;
-		this.arrivalTime = arrivalTime;
-		this.arrivalModeOfTransport = arrivalModeOfTransport;
-		this.arrivalTrainNumber = arrivalTrainNumber;
-		this.arrivalTrainName = arrivalTrainName;
-		this.departureDate = departureDate;
-		this.departureTime = departureTime;
-		this.departureModeOfTransport = departureModeOfTransport;
-		this.departureTrainNumber = departureTrainNumber;
-		this.departureTrainName = departureTrainName;
-	}
-
-
-	public int getTravelId() {
-		return travelId;
-	}
-
-
-	public void setTravelId(int travelId) {
-		this.travelId = travelId;
-	}
-
-
-	public int getEventId() {
-		return eventId;
-	}
-
-
-	public void setEventId(int eventId) {
-		this.eventId = eventId;
-	}
-
-
-	public int getUserId() {
-		return userId;
-	}
-
-
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
-
-
-	public String getFromCity() {
-		return fromCity;
-	}
-
-
-	public void setFromCity(String fromCity) {
-		this.fromCity = fromCity;
-	}
-
-
-	public String getFromCountry() {
-		return fromCountry;
-	}
-
-
-	public void setFromCountry(String fromCountry) {
-		this.fromCountry = fromCountry;
-	}
-
-
-	public Date getArrivalDate() {
-		return arrivalDate;
-	}
-
-
-	public void setArrivalDate(Date arrivalDate) {
-		this.arrivalDate = arrivalDate;
-	}
-
-
-	public Date getArrivalTime() {
-		return arrivalTime;
-	}
-
-
-	public void setArrivalTime(Date arrivalTime) {
-		this.arrivalTime = arrivalTime;
-	}
-
-
-	public String getArrivalModeOfTransport() {
-		return arrivalModeOfTransport;
-	}
-
-
-	public void setArrivalModeOfTransport(String arrivalModeOfTransport) {
-		this.arrivalModeOfTransport = arrivalModeOfTransport;
-	}
-
-
-	public String getArrivalTrainNumber() {
-		return arrivalTrainNumber;
-	}
-
-
-	public void setArrivalTrainNumber(String arrivalTrainNumber) {
-		this.arrivalTrainNumber = arrivalTrainNumber;
-	}
-
-
-	public String getArrivalTrainName() {
-		return arrivalTrainName;
-	}
-
-
-	public void setArrivalTrainName(String arrivalTrainName) {
-		this.arrivalTrainName = arrivalTrainName;
-	}
-
-
-	public Date getDepartureDate() {
-		return departureDate;
-	}
-
-
-	public void setDepartureDate(Date departureDate) {
-		this.departureDate = departureDate;
-	}
-
-
-	public Date getDepartureTime() {
-		return departureTime;
-	}
-
-
-	public void setDepartureTime(Date departureTime) {
-		this.departureTime = departureTime;
-	}
-
-
-	public String getDepartureModeOfTransport() {
-		return departureModeOfTransport;
-	}
-
-
-	public void setDepartureModeOfTransport(String departureModeOfTransport) {
-		this.departureModeOfTransport = departureModeOfTransport;
-	}
-
-
-	public String getDepartureTrainNumber() {
-		return departureTrainNumber;
-	}
-
-
-	public void setDepartureTrainNumber(String departureTrainNumber) {
-		this.departureTrainNumber = departureTrainNumber;
-	}
-
-
-	public String getDepartureTrainName() {
-		return departureTrainName;
-	}
-
-
-	public void setDepartureTrainName(String departureTrainName) {
-		this.departureTrainName = departureTrainName;
-	}
+    private String departure_train_name;
     
-    
+    private String description;
 
-   
+	public Travel(int travel_id, int event_id, int user_id, String from_city, String from_country, Date arrival_date,
+			String arrival_time, String arrival_mode_of_transport, String arrival_train_number,
+			String arrival_train_name, Date departure_date, String departure_time, String departure_mode_of_transport,
+			String departure_train_number, String departure_train_name, String description) {
+		this.travel_id = travel_id;
+		this.event_id = event_id;
+		this.user_id = user_id;
+		this.from_city = from_city;
+		this.from_country = from_country;
+		this.arrival_date = arrival_date;
+		this.arrival_time = arrival_time;
+		this.arrival_mode_of_transport = arrival_mode_of_transport;
+		this.arrival_train_number = arrival_train_number;
+		this.arrival_train_name = arrival_train_name;
+		this.departure_date = departure_date;
+		this.departure_time = departure_time;
+		this.departure_mode_of_transport = departure_mode_of_transport;
+		this.departure_train_number = departure_train_number;
+		this.departure_train_name = departure_train_name;
+		this.description = description;
+	}
+
+	public Travel() {
+
+	}
+
+	public int getTravel_id() {
+		return travel_id;
+	}
+
+	public void setTravel_id(int travel_id) {
+		this.travel_id = travel_id;
+	}
+
+	public int getEvent_id() {
+		return event_id;
+	}
+
+	public void setEvent_id(int event_id) {
+		this.event_id = event_id;
+	}
+
+	public int getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
+	}
+
+	public String getFrom_city() {
+		return from_city;
+	}
+
+	public void setFrom_city(String from_city) {
+		this.from_city = from_city;
+	}
+
+	public String getFrom_country() {
+		return from_country;
+	}
+
+	public void setFrom_country(String from_country) {
+		this.from_country = from_country;
+	}
+
+	public Date getArrival_date() {
+		return arrival_date;
+	}
+
+	public void setArrival_date(Date arrival_date) {
+		this.arrival_date = arrival_date;
+	}
+
+	public String getArrival_time() {
+		return arrival_time;
+	}
+
+	public void setArrival_time(String arrival_time) {
+		this.arrival_time = arrival_time;
+	}
+
+	public String getArrival_mode_of_transport() {
+		return arrival_mode_of_transport;
+	}
+
+	public void setArrival_mode_of_transport(String arrival_mode_of_transport) {
+		this.arrival_mode_of_transport = arrival_mode_of_transport;
+	}
+
+	public String getArrival_train_number() {
+		return arrival_train_number;
+	}
+
+	public void setArrival_train_number(String arrival_train_number) {
+		this.arrival_train_number = arrival_train_number;
+	}
+
+	public String getArrival_train_name() {
+		return arrival_train_name;
+	}
+
+	public void setArrival_train_name(String arrival_train_name) {
+		this.arrival_train_name = arrival_train_name;
+	}
+
+	public Date getDeparture_date() {
+		return departure_date;
+	}
+
+	public void setDeparture_date(Date departure_date) {
+		this.departure_date = departure_date;
+	}
+
+	public String getDeparture_time() {
+		return departure_time;
+	}
+
+	public void setDeparture_time(String departure_time) {
+		this.departure_time = departure_time;
+	}
+
+	public String getDeparture_mode_of_transport() {
+		return departure_mode_of_transport;
+	}
+
+	public void setDeparture_mode_of_transport(String departure_mode_of_transport) {
+		this.departure_mode_of_transport = departure_mode_of_transport;
+	}
+
+	public String getDeparture_train_number() {
+		return departure_train_number;
+	}
+
+	public void setDeparture_train_number(String departure_train_number) {
+		this.departure_train_number = departure_train_number;
+	}
+
+	public String getDeparture_train_name() {
+		return departure_train_name;
+	}
+
+	public void setDeparture_train_name(String departure_train_name) {
+		this.departure_train_name = departure_train_name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
+
+
+	
+
+    
+	
 
 }

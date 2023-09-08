@@ -185,8 +185,7 @@ public class UserController {
 	// ----------------------------TO SAVE A USER'S IMAGE----------------------------------------------------------------------------------------------------------------
 
 	@PostMapping("saveImage")
-	public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file,
-			@RequestHeader("Authorization") String authorizationHeader) {
+	public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String authorizationHeader) {
 
 		String email = "";
 		String message = "";

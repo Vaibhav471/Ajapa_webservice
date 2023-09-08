@@ -143,7 +143,11 @@ public class EventController {
 				
 				
 				Files.copy(file.getInputStream(),root);
-			} catch (IOException e) {
+				message="document saved";
+			} 
+			
+			
+			catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.print(e.getMessage());
 				
@@ -198,18 +202,13 @@ public class EventController {
 			
 			catch (Exception e) {
 	        e.printStackTrace();
-	    }
-
-			
-			
-
-			
-			
+	    }			
 			Map<String, Integer> data = new HashMap();
 		    data.put("message", eventId);
 		     return new ResponseEntity<>(data, HttpStatus.OK);
 		}
 		
+		//------------------------------TO GET ALL EVENTS IN A PAGINATION FORMAT-------------------------------------------------------------
 		@GetMapping("getEvents/{start}/{end}")
 		public List<Event> getUsers(@PathVariable int start, @PathVariable int end) {
 		    List<Event> events = entityManager.createQuery("from Event", Event.class).getResultList();
