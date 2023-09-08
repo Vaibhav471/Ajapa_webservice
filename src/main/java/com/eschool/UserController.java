@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -264,6 +265,60 @@ public class UserController {
 	        return Collections.emptyList();
 	    }
 	}
+	
+	// ----------------------------TO GET EMAIL ADDRESS----------------------------------------------------------------------------------------------------------------
 
+		@PostMapping("getEmail")
+		public ResponseEntity<Object> getEmail(@RequestHeader("Authorization") String authorizationHeader) {
+
+			String email = "";
+			
+			System.out.println(authorizationHeader);
+
+			// The code to decode the JWT token sent by client
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+				String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
+
+				System.out.println(jwtToken);
+
+				try {
+
+					Base64.Decoder decoder = Base64.getUrlDecoder();
+					String chunks[] = jwtToken.split("\\.");
+
+					String header = new String(decoder.decode(chunks[0]));
+					String payload = new String(decoder.decode(chunks[1]));
+
+					System.out.println(header);
+
+					System.out.println(payload);
+					ObjectMapper mapper = new ObjectMapper();
+					Map<String, String> map = mapper.readValue(payload, Map.class);
+
+					System.out.println("this is our email");
+					System.out.println(map.get("email"));
+
+					email = map.get("email"); // getting email from token in a string variable
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Failed to decode JWT: " + e.getMessage());
+					message = e.getMessage();
+				}
+			}
+
+			
+			Map<String, String> data = new HashMap();
+			data.put("Email", email);
+			return new ResponseEntity<>(data, HttpStatus.OK);
+		}
+		
+		@GetMapping("getUsersToApprove")
+		public List<User> getUsersToApprove(){
+			
+			return urepo.findUsersByStatus(0);
+		}
+		
+		
 	
 }

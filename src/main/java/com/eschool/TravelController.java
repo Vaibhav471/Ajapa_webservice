@@ -1,7 +1,12 @@
 package com.eschool;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +20,9 @@ public class TravelController {
     TravelRepository trepo;
 	
 	@PostMapping("saveTravelDetails")
-	public String saveTravelDetails(@RequestBody Travel travel) {
-		
+	public ResponseEntity<Object> saveTravelDetails(@RequestBody Travel travel) {
+		Map<String, String> data = new HashMap<>();
+
 		String message="";
 		try {
 			trepo.save(travel);
@@ -24,7 +30,9 @@ public class TravelController {
 		} catch (Exception e) {
 			message = e.getMessage();
 		}		
-		return message;
+		data.put("msg", message);
+
+		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 	
 
