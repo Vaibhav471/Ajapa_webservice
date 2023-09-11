@@ -33,12 +33,14 @@ public class User {
     double pincode;
     int status;
     
+    String user_type;
+    
     
     
 	public User(int id, @Email(message = "Enter a valid Email address") String email, String full_name,
 			String dob, String mobile_num, String password, String gender, String whatsapp_num,
 			String blood_grp, String occupation, String qualification, String address_linep, String address_lines,
-			String country, String state, String city, String diksha_dt, int age, double pincode, int status) {
+			String country, String state, String city, String diksha_dt, int age, double pincode, int status, String user_type) {
 		this.id = id;
 		this.email = email;
 		this.full_name = full_name;
@@ -59,6 +61,7 @@ public class User {
 		this.age = age;
 		this.pincode = pincode;
 		this.status = status;
+		this.user_type = user_type;
 	}
 
 
@@ -306,6 +309,20 @@ public class User {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+
+
+
+	public String getUser_type() {
+		return user_type;
+	}
+
+
+
+	public void setUser_type(String user_type) {
+		this.user_type = user_type;
+	}
+	
+	
     
     
 

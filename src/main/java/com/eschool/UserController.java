@@ -62,6 +62,7 @@ public class UserController {
 	@PostMapping("login")
 	public ResponseEntity<Object> login(@RequestBody User user) {
 		String token_message = "";
+		String type="";
 		Map<String, String> data = new HashMap<>();
 		try
 		{
@@ -69,10 +70,12 @@ public class UserController {
 		if (u != null) {
 			// The code to convert user information into JWT token
 			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
-					.claim("mobile_number", u.getMobile_num()).claim("id", u.getId())
+					.claim("mobile_number", u.getMobile_num()).claim("id", u.getId()).claim("type", u.getUser_type())
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
+			type=u.getUser_type();
+			
 			token_message = token;
 		} else {
 			token_message = "Invalid User information (0)";
@@ -83,6 +86,7 @@ public class UserController {
 			token_message=e.getMessage();
 		}
 		data.put("token", token_message);
+		data.put("type", type);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
@@ -177,6 +181,7 @@ public class UserController {
 
 			existingUser.setStatus(1);
 			urepo.save(existingUser);
+			message="User Approved";
 		}
 		Map<String, String> data = new HashMap();
 		data.put("token", message);
