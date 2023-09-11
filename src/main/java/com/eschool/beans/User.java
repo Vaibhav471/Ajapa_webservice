@@ -23,7 +23,7 @@ public class User {
 	
 	String dob;
 	
-	String mobile_num;
+	String mobileNum;
 	
 	
 	String password;
@@ -38,14 +38,14 @@ public class User {
     
     
 	public User(int id, @Email(message = "Enter a valid Email address") String email, String full_name,
-			String dob, String mobile_num, String password, String gender, String whatsapp_num,
+			String dob, String mobileNum, String password, String gender, String whatsapp_num,
 			String blood_grp, String occupation, String qualification, String address_linep, String address_lines,
 			String country, String state, String city, String diksha_dt, int age, double pincode, int status, String user_type) {
 		this.id = id;
 		this.email = email;
 		this.full_name = full_name;
 		this.dob = dob;
-		this.mobile_num = mobile_num;
+		this.mobileNum = mobileNum;
 		this.password = password;
 		this.gender = gender;
 		this.whatsapp_num = whatsapp_num;
@@ -120,14 +120,14 @@ public class User {
 
 
 
-	public String getMobile_num() {
-		return mobile_num;
+	public String getMobileNum() {
+		return mobileNum;
 	}
 
 
 
-	public void setMobile_num(String mobile_num) {
-		this.mobile_num = mobile_num;
+	public void setMobileNum(String mobileNum) {
+		this.mobileNum = mobileNum;
 	}
 
 
@@ -322,7 +322,17 @@ public class User {
 		this.user_type = user_type;
 	}
 	
-	
+	private String identifier; // Can be email or mobile number
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    
     
     
 

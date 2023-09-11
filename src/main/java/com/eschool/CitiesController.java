@@ -25,7 +25,7 @@ public class CitiesController {
         this.citiesService = citiesService;
     }
 
-    @GetMapping("/bystate/{stateId}")
+    @GetMapping("/cities/{stateId}")
     public List<Cities> getCitiesByStateId(@PathVariable int stateId) {
         return citiesService.getCitiesByStateId(stateId);
     }

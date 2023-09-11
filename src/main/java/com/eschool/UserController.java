@@ -45,6 +45,13 @@ public class UserController {
 	ServletContext context;
 	@PersistenceContext
 	private EntityManager entityManager;
+	private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		message="";
@@ -66,11 +73,14 @@ public class UserController {
 		Map<String, String> data = new HashMap<>();
 		try
 		{
-		User u = urepo.findByEmailAndPassword(user.getEmail(), user.getPassword());
+		 String identifier = user.getIdentifier();
+        String password = user.getPassword();
+        User u = userService.getUserByEmailOrMobileNumberAndPassword(identifier, password);
+		
 		if (u != null) {
 			// The code to convert user information into JWT token
 			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
-					.claim("mobile_number", u.getMobile_num()).claim("id", u.getId()).claim("type", u.getUser_type())
+					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
@@ -125,8 +135,8 @@ public class UserController {
 			if (user.getDob() != null) {
 				existingUser.setDob(user.getDob());
 			}
-			if (user.getMobile_num() != null) {
-				existingUser.setMobile_num(user.getMobile_num());
+			if (user.getMobileNum() != null) {
+				existingUser.setMobileNum(user.getMobileNum());
 			}
 			if (user.getGender() != null) {
 				existingUser.setGender(user.getGender());

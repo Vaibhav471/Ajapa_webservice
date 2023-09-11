@@ -19,7 +19,7 @@ public class StatesController {
         this.statesService = statesService;
     }
 
-    @GetMapping("/bycountry/{countryId}")
+    @GetMapping("/states/{countryId}")
     public List<States> getStatesByCountryId(@PathVariable Long countryId) {
         return statesService.getStatesByCountryId(countryId);
     }

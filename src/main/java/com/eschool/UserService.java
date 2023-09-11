@@ -18,6 +18,14 @@ public class UserService {
     @PersistenceContext
     private EntityManager entityManager;
     
+    private final UserRepository userRepository;
+
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+    
     public User getUserByEmailAndPassword(String email, String password) {
         return urepo.findByEmailAndPassword(email, password);
     }
@@ -34,6 +42,10 @@ public class UserService {
         Query query = entityManager.createQuery(jpql);
         query.setParameter("status", status);
         return query.getResultList();
+    }
+    
+    public User getUserByEmailOrMobileNumberAndPassword(String identifier, String password) {
+        return userRepository.findByEmailOrMobileNumberAndPassword(identifier, password);
     }
     
 }
