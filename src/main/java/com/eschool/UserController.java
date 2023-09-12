@@ -334,6 +334,12 @@ public class UserController {
 			return urepo.findUsersByStatus(0);
 		}
 		
+		@GetMapping("getUserDetails/{email}")
+		public User getUserDetails(@PathVariable String email) {
+			
+			return urepo.findByEmail(email);
+		}
+		
 		
 	
 }
