@@ -75,8 +75,8 @@ public class EventController {
 		
 		//-------------------------------------------TO EDIT EVENT----------------------------------------------------------
 		
-		@PutMapping("editEvent")
-		public ResponseEntity<Object> editEvent(@RequestParam("id")int id, @RequestBody Event event){
+		@PutMapping("editEvent/{id}")
+		public ResponseEntity<Object> editEvent(@PathVariable int id, @RequestBody Event event){
 			
 			String message="";
 			
@@ -90,6 +90,9 @@ public class EventController {
 			existingEvent.setStart_date(event.getStart_date());
 			existingEvent.setEvent_status(event.getEvent_status());
 			existingEvent.setOther(event.getOther());
+			existingEvent.setStart_time(event.getStart_time());
+			existingEvent.setEnd_time(event.getEnd_time());
+
 
 
 			erepo.save(existingEvent);
@@ -116,7 +119,7 @@ public class EventController {
 			
 		}
 		
-		//-----------------------------------------------TO SAVE EVENT RELATED DOCUMENTS-------------------------------------------------------------------------------------------------------------
+		//------------------------------TO SAVE EVENT RELATED DOCUMENTS-------------------------------------------------------------------------------------------------------------
 		
 		@PostMapping("saveEventD")
 		public ResponseEntity<Object> saveEventDocument(@RequestParam("file") Part file, @RequestParam("event_id") int event_id) {

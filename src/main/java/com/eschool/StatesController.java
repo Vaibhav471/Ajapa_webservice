@@ -18,7 +18,7 @@ public class StatesController {
     public StatesController(StatesService statesService) {
         this.statesService = statesService;
     }
-
+//----------------------------------------------------------------------------------------------
     @GetMapping("/states/{countryId}")
     public List<States> getStatesByCountryId(@PathVariable Long countryId) {
         return statesService.getStatesByCountryId(countryId);

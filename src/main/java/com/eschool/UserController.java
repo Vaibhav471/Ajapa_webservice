@@ -77,7 +77,7 @@ public class UserController {
         String password = user.getPassword();
         User u = userService.getUserByEmailOrMobileNumberAndPassword(identifier, password);
 		
-		if (u != null) {
+		if (u != null && u.getStatus()==1) {
 			// The code to convert user information into JWT token
 			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
 					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
@@ -87,9 +87,11 @@ public class UserController {
 			type=u.getUser_type();
 			
 			token_message = token;
-		} else {
-			token_message = "Invalid User information (0)";
 		}
+		else {
+			token_message = "Invalid User information or request may be unapproved";
+		}
+		
 		}
 		catch(Exception e)
 		{
@@ -328,18 +330,30 @@ public class UserController {
 			return new ResponseEntity<>(data, HttpStatus.OK);
 		}
 		
+	//---------------------------------TO GET LIST OF UNAPPROVED USERS------------------------------------------------------------------------------	
 		@GetMapping("getUsersToApprove")
 		public List<User> getUsersToApprove(){
 			
 			return urepo.findUsersByStatus(0);
 		}
 		
+	//-------------------------------TO GET USER DETAILS BY IT'S EMAIL----------------------------------------------------------------------	
 		@GetMapping("getUserDetails/{email}")
 		public User getUserDetails(@PathVariable String email) {
 			
 			return urepo.findByEmail(email);
 		}
-		
-		
+	//-------------------------------------TO GET ALL USERS FROM DB--------------------------------------------------	
+		@GetMapping("getAllUsers")
+		public List<User> getAllUsers(){
+			
+			return urepo.findAll();
+		}
+	//----------------------------TO GET USER DETAILS BY ID--------------------------------------------------------------------
+		@GetMapping("getUserById/{id}")
+		public User getUserById(@PathVariable int id) {
+			
+			return urepo.findById(id);
+		}
 	
 }

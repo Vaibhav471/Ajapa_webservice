@@ -12,7 +12,7 @@ public class Event {
 	
 	@Id
 	private int event_id;
-	private String event_name,event_type,event_location,start_date,end_date,listed_by;
+	private String event_name,event_type,event_location,start_date,end_date,listed_by,start_time,end_time;
 	private int event_status;
 	private Blob other;
 	
@@ -21,7 +21,6 @@ public class Event {
 	
 	public Event(int event_id, String event_name, String event_type, String event_location, String start_date,
 			String end_date, String listed_by, int event_status, Blob other) {
-		super();
 		this.event_id = event_id;
 		this.event_name = event_name;
 		this.event_type = event_type;
@@ -35,7 +34,7 @@ public class Event {
 
 
 	public Event( String event_name, String event_type, String event_location, String start_date,
-			String end_date, String listed_by, int event_status) {
+			String end_date, String listed_by, int event_status, String start_time, String end_time) {
 		this.event_name = event_name;
 		this.event_type = event_type;
 		this.event_location = event_location;
@@ -43,6 +42,8 @@ public class Event {
 		this.end_date = end_date;
 		this.listed_by = listed_by;
 		this.event_status = event_status;
+		this.start_time = start_time;
+		this.end_time = end_time;
 	}
 
 
@@ -139,6 +140,26 @@ public class Event {
 
 	public void setOther(Blob other) {
 		this.other = other;
+	}
+
+
+	public String getStart_time() {
+		return start_time;
+	}
+
+
+	public void setStart_time(String start_time) {
+		this.start_time = start_time;
+	}
+
+
+	public String getEnd_time() {
+		return end_time;
+	}
+
+
+	public void setEnd_time(String end_time) {
+		this.end_time = end_time;
 	}
 	
 	

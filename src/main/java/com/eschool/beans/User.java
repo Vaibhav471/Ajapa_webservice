@@ -33,7 +33,7 @@ public class User {
     double pincode;
     int status;
     
-    String user_type;
+    String user_type="member";
     
     
     
