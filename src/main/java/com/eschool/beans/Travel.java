@@ -6,6 +6,9 @@ import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,9 +18,15 @@ public class Travel {
     @Id
     private int travel_id;
 
-    private int event_id;
+   // @ManyToOne
+    //@JoinTable(name="event",joinColumns={@JoinColumn(name="event_id")})
+    private int eventId;
+    
+    
 
-    private int user_id;
+   //@ManyToOne
+   //@JoinTable(name="user",joinColumns={@JoinColumn(name="id")})
+    private int userId;
 
     private String from_city;
 
@@ -44,29 +53,13 @@ public class Travel {
     private String departure_train_name;
     
     private String description;
+    
+    
+    
 
-	public Travel(int travel_id, int event_id, int user_id, String from_city, String from_country, Date arrival_date,
-			String arrival_time, String arrival_mode_of_transport, String arrival_train_number,
-			String arrival_train_name, Date departure_date, String departure_time, String departure_mode_of_transport,
-			String departure_train_number, String departure_train_name, String description) {
-		this.travel_id = travel_id;
-		this.event_id = event_id;
-		this.user_id = user_id;
-		this.from_city = from_city;
-		this.from_country = from_country;
-		this.arrival_date = arrival_date;
-		this.arrival_time = arrival_time;
-		this.arrival_mode_of_transport = arrival_mode_of_transport;
-		this.arrival_train_number = arrival_train_number;
-		this.arrival_train_name = arrival_train_name;
-		this.departure_date = departure_date;
-		this.departure_time = departure_time;
-		this.departure_mode_of_transport = departure_mode_of_transport;
-		this.departure_train_number = departure_train_number;
-		this.departure_train_name = departure_train_name;
-		this.description = description;
-	}
+    
 
+	
 	public Travel() {
 
 	}
@@ -79,21 +72,25 @@ public class Travel {
 		this.travel_id = travel_id;
 	}
 
-	public int getEvent_id() {
-		return event_id;
+	public int getEventId() {
+		return eventId;
 	}
 
-	public void setEvent_id(int event_id) {
-		this.event_id = event_id;
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
 	}
 
-	public int getUser_id() {
-		return user_id;
+	
+
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
+
+	
 
 	public String getFrom_city() {
 		return from_city;
@@ -198,9 +195,36 @@ public class Travel {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	
+
+	public Travel(int travel_id, int eventId, int userId, String from_city, String from_country, Date arrival_date,
+			String arrival_time, String arrival_mode_of_transport, String arrival_train_number,
+			String arrival_train_name, Date departure_date, String departure_time, String departure_mode_of_transport,
+			String departure_train_number, String departure_train_name, String description) {
+		this.travel_id = travel_id;
+		this.eventId = eventId;
+		this.userId = userId;
+		this.from_city = from_city;
+		this.from_country = from_country;
+		this.arrival_date = arrival_date;
+		this.arrival_time = arrival_time;
+		this.arrival_mode_of_transport = arrival_mode_of_transport;
+		this.arrival_train_number = arrival_train_number;
+		this.arrival_train_name = arrival_train_name;
+		this.departure_date = departure_date;
+		this.departure_time = departure_time;
+		this.departure_mode_of_transport = departure_mode_of_transport;
+		this.departure_train_number = departure_train_number;
+		this.departure_train_name = departure_train_name;
+		this.description = description;
+	}
+
+	
 	
 	
 
+	
 
 	
 

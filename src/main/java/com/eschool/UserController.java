@@ -76,10 +76,14 @@ public class UserController {
 		 String identifier = user.getIdentifier();
         String password = user.getPassword();
         User u = userService.getUserByEmailOrMobileNumberAndPassword(identifier, password);
-		
-		if (u != null && u.getStatus()==1) {
+		System.out.println(u);
+		if (u != null) {
+			if(u.getStatus()!=1) {
+				token_message="Unapproved User";
+			}
+			else {
 			// The code to convert user information into JWT token
-			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
+			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
 					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
@@ -87,9 +91,10 @@ public class UserController {
 			type=u.getUser_type();
 			
 			token_message = token;
+			}
 		}
 		else {
-			token_message = "Invalid User information or request may be unapproved";
+			token_message = "Invalid User information";
 		}
 		
 		}
@@ -107,6 +112,7 @@ public class UserController {
 	public ResponseEntity<Object> updateUser(@RequestBody User user,@RequestHeader("Authorization") String authorizationHeader) {
 		String message = "";
 		String email = "";
+		int id;
 		//System.out.println(authorizationHeader);// token from header displayed on console The code to decode the JWT token sent by client
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
@@ -124,6 +130,7 @@ public class UserController {
 				System.out.println(map.get("email"));
 				email = map.get("email"); // getting email from token in a string variable
 
+				id=Integer.parseInt(map.get("id"));
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Failed to decode JWT: " + e.getMessage());
@@ -131,8 +138,8 @@ public class UserController {
 		}
 		User existingUser = urepo.findByEmail(email);
 		if (existingUser != null) {
-			if (user.getFull_name() != null) {
-				existingUser.setFull_name(user.getFull_name()); // this is a mandatory field, if client sends it null at the time of updation, we do not set null as fiel value.
+			if (user.getFullName() != null) {
+				existingUser.setFullName(user.getFullName()); // this is a mandatory field, if client sends it null at the time of updation, we do not set null as fiel value.
 			}
 			if (user.getDob() != null) {
 				existingUser.setDob(user.getDob());
@@ -355,5 +362,11 @@ public class UserController {
 			
 			return urepo.findById(id);
 		}
-	
+	//----------------------------------------------------------------------------------------------------
+		@GetMapping("getNumberOfUnapprovedUsers")
+		public long getNumberOfUnapprovedUsers() {
+			
+			return urepo.countByStatus(0);
+			
+		}
 }

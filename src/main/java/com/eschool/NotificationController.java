@@ -107,13 +107,17 @@ public class NotificationController {
     		
     	 User u= urepo.findByMobileNum(pno);
     	 
-    	 System.out.println(u.getFull_name());
+    	 System.out.println(u.getFullName());
     	 
     	 
     	 
-    	 if (u != null && u.getStatus()==1) {
+    	 if (u != null) {
+    		 if(u.getStatus()!=1) {
+    			 token_message="Unapproved User";
+    		 }
+    		 else {
  			// The code to convert user information into JWT token
- 			String token = Jwts.builder().claim("full_name", u.getFull_name()).claim("email", u.getEmail())
+ 			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
  					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
  					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
  					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
@@ -121,9 +125,11 @@ public class NotificationController {
  			type=u.getUser_type();
  			
  			token_message = token;
+    		 }
+    	 }
  			
- 		} else {
- 			token_message = "Invalid User information or user may be unapproved";
+ 		 else {
+ 			token_message = "Invalid User information";
  		}
     		
     	}

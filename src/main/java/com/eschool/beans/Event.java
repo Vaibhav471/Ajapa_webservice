@@ -1,6 +1,8 @@
 package com.eschool.beans;
 
 import java.sql.Blob;
+import java.util.Date;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,45 +14,63 @@ public class Event {
 	
 	@Id
 	private int event_id;
-	private String event_name,event_type,event_location,start_date,end_date,listed_by,start_time,end_time;
+	private String eventName,event_type,event_location,listed_by,start_time,end_time;
 	private int event_status;
 	private Blob other;
+	Date startDate;
+	Date endDate;
 	
 	
 	
 	
-	public Event(int event_id, String event_name, String event_type, String event_location, String start_date,
-			String end_date, String listed_by, int event_status, Blob other) {
-		this.event_id = event_id;
-		this.event_name = event_name;
-		this.event_type = event_type;
-		this.event_location = event_location;
-		this.start_date = start_date;
-		this.end_date = end_date;
-		this.listed_by = listed_by;
-		this.event_status = event_status;
-		this.other = other;
+	
+	
+	public Event() {
+		
 	}
 
 
-	public Event( String event_name, String event_type, String event_location, String start_date,
-			String end_date, String listed_by, int event_status, String start_time, String end_time) {
-		this.event_name = event_name;
+
+
+
+
+	public Event(int event_id, String eventName, String event_type, String event_location, String listed_by,
+			String start_time, String end_time, int event_status, Date startDate, Date endDate) {
+		this.event_id = event_id;
+		this.eventName = eventName;
 		this.event_type = event_type;
 		this.event_location = event_location;
-		this.start_date = start_date;
-		this.end_date = end_date;
 		this.listed_by = listed_by;
-		this.event_status = event_status;
 		this.start_time = start_time;
 		this.end_time = end_time;
+		this.event_status = event_status;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
 
-	public Event() {
 
-	
+
+
+
+	public Event(int event_id, String eventName, String event_type, String event_location, String listed_by,
+			String start_time, String end_time, int event_status, Blob other, Date startDate, Date endDate) {
+		this.event_id = event_id;
+		this.eventName = eventName;
+		this.event_type = event_type;
+		this.event_location = event_location;
+		this.listed_by = listed_by;
+		this.start_time = start_time;
+		this.end_time = end_time;
+		this.event_status = event_status;
+		this.other = other;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
+
+
+
+
 
 
 	public int getEvent_id() {
@@ -58,19 +78,42 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setEvent_id(int event_id) {
 		this.event_id = event_id;
 	}
 
 
-	public String getEvent_name() {
-		return event_name;
+
+
+
+
+	
+
+
+
+
+
+
+	public String getEventName() {
+		return eventName;
 	}
 
 
-	public void setEvent_name(String event_name) {
-		this.event_name = event_name;
+
+
+
+
+	public void setEventName(String eventName) {
+		this.eventName = eventName;
 	}
+
+
+
+
 
 
 	public String getEvent_type() {
@@ -78,9 +121,17 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setEvent_type(String event_type) {
 		this.event_type = event_type;
 	}
+
+
+
+
 
 
 	public String getEvent_location() {
@@ -88,29 +139,17 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setEvent_location(String event_location) {
 		this.event_location = event_location;
 	}
 
 
-	public String getStart_date() {
-		return start_date;
-	}
 
 
-	public void setStart_date(String start_date) {
-		this.start_date = start_date;
-	}
-
-
-	public String getEnd_date() {
-		return end_date;
-	}
-
-
-	public void setEnd_date(String end_date) {
-		this.end_date = end_date;
-	}
 
 
 	public String getListed_by() {
@@ -118,29 +157,17 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setListed_by(String listed_by) {
 		this.listed_by = listed_by;
 	}
 
 
-	public int getEvent_status() {
-		return event_status;
-	}
 
 
-	public void setEvent_status(int event_status) {
-		this.event_status = event_status;
-	}
-
-
-	public Blob getOther() {
-		return other;
-	}
-
-
-	public void setOther(Blob other) {
-		this.other = other;
-	}
 
 
 	public String getStart_time() {
@@ -148,9 +175,17 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setStart_time(String start_time) {
 		this.start_time = start_time;
 	}
+
+
+
+
 
 
 	public String getEnd_time() {
@@ -158,14 +193,83 @@ public class Event {
 	}
 
 
+
+
+
+
 	public void setEnd_time(String end_time) {
 		this.end_time = end_time;
+	}
+
+
+
+
+
+
+	public int getEvent_status() {
+		return event_status;
+	}
+
+
+
+
+
+
+	public void setEvent_status(int event_status) {
+		this.event_status = event_status;
+	}
+
+
+
+
+
+
+	public Blob getOther() {
+		return other;
+	}
+
+
+
+
+
+
+	public void setOther(Blob other) {
+		this.other = other;
+	}
+
+
+
+
+
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+
+
+
+
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+
+
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 	
 	
 	
 	
-	
-
 }

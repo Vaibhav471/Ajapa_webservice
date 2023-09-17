@@ -2,6 +2,7 @@ package com.eschool;
 
 import java.io.File;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,9 +11,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,11 +88,11 @@ public class EventController {
 			Event existingEvent = erepo.findById(id);
 			
 			existingEvent.setEvent_location(event.getEvent_location());
-			existingEvent.setEvent_name(event.getEvent_name());
+			existingEvent.setEventName(event.getEventName());
 			existingEvent.setEvent_type(event.getEvent_type());
-			existingEvent.setEnd_date(event.getEnd_date());
+			existingEvent.setEndDate(event.getEndDate());
 			existingEvent.setListed_by(event.getListed_by());
-			existingEvent.setStart_date(event.getStart_date());
+			existingEvent.setStartDate(event.getStartDate());
 			existingEvent.setEvent_status(event.getEvent_status());
 			existingEvent.setOther(event.getOther());
 			existingEvent.setStart_time(event.getStart_time());
@@ -216,12 +221,44 @@ public class EventController {
 		public List<Event> getUsers(@PathVariable int start, @PathVariable int end) {
 		    List<Event> events = entityManager.createQuery("from Event", Event.class).getResultList();
 		    
-		    if (start >= 0 && end <= events.size() && start <= end) {
+		    
+		    
+		    if (start >= 0 && end < events.size() && start <= end) {
+		    	
 		        return events.subList(start, end);
-		    } else {
+		    } 
+		    else if (start >= 0 && start <= end) 
+		    {
+		    	return events.subList(start, events.size());
+		    }
+		    else  {
 		        // Handle invalid start and end values, e.g., return an empty list or an error response.
 		        return Collections.emptyList();
 		    }
 		}
+		
+		//----------------------------------------------------------------------------------------------------------------------------------------------
+	    @GetMapping("getNumberOfEvents")
+	    public long getNumerOfEvents() {
+	    	
+	    	return erepo.count();
+	    }
+	    
+	    //---------------------------------------------------------------------------------------------------------------------------------------------------
+	    @GetMapping("getEventsGreaterThan/{date}")
+	    public List<Event> getEventsGreaterThan(@PathVariable String date){
+	    	 java.util.Date d1=null;
+			try {
+				java.text.SimpleDateFormat sd=new java.text.SimpleDateFormat("yyyy-MM-dd");
+				d1 = sd.parse(date);
+			} catch (ParseException e) {
+				System.out.println("Error:"+e.getMessage());
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	System.out.println(date);
+	    	System.out.println(d1.toString());
+	    	return erepo.findAllByStartDateGreaterThan(d1);
+	    }
 
 }

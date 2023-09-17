@@ -19,7 +19,7 @@ public class User {
 	@Email(message="Enter a valid Email address")
 	String email;
 	
-	String full_name;
+	String fullName;
 	
 	String dob;
 	
@@ -37,13 +37,13 @@ public class User {
     
     
     
-	public User(int id, @Email(message = "Enter a valid Email address") String email, String full_name,
+	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName,
 			String dob, String mobileNum, String password, String gender, String whatsapp_num,
 			String blood_grp, String occupation, String qualification, String address_linep, String address_lines,
 			String country, String state, String city, String diksha_dt, int age, double pincode, int status, String user_type) {
 		this.id = id;
 		this.email = email;
-		this.full_name = full_name;
+		this.fullName = fullName;
 		this.dob = dob;
 		this.mobileNum = mobileNum;
 		this.password = password;
@@ -96,14 +96,14 @@ public class User {
 
 
 
-	public String getFull_name() {
-		return full_name;
+	public String getFullName() {
+		return fullName;
 	}
 
 
 
-	public void setFull_name(String full_name) {
-		this.full_name = full_name;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 

@@ -11,4 +11,9 @@ public interface TravelRepository extends CrudRepository<Travel, Integer> {
 	List<Travel> findAll();
 	
 	Travel findById(int id);
+	
+	long count();
+	
+	List<Travel> findAllByUserId(int id);
+
 }
