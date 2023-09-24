@@ -133,6 +133,15 @@ List<TravelEventUser> t1=new ArrayList();
 		
 	}
 	
+	//-------------------------------------------------------------------------------------------------------------------
+	
+	@GetMapping("getTravelByEventAndTravel/{eventId}/{familyId}")
+	public List<Travel> getTravelByEventAndTravel(@PathVariable int eventId, @PathVariable int familyId){
+		
+		
+		return trepo.findAllByEventIdAndFamilyId(eventId, familyId);
+	}
+	
 	
 
 }

@@ -52,11 +52,20 @@ public class NotificationController {
 	UserRepository urepo;
 	
 	private final OtpsService otpsService;
+	private final EmailOTPService emailotpService;
 
-    @Autowired
-    public NotificationController(OtpsService otpService) {
+	
+	@Autowired
+    public NotificationController(OtpsService otpService, EmailOTPService emailotpService) {
         this.otpsService = otpService;
+        this.emailotpService = emailotpService;
+
     }
+	
+
+	
+
+    
 	
 	@PostMapping("loginWithSmsOTP1/{pno}")
     public String loginWithSmsOTP1(@PathVariable String pno, HttpServletRequest request) {
@@ -89,7 +98,7 @@ public class NotificationController {
     }
     
     @PostMapping("verifySmsOTP1/{otp}/{pno}")
-    public ResponseEntity<Object> verifySmsOTP1(@PathVariable String otp, @PathVariable String pno, HttpServletRequest request) {
+    public ResponseEntity<Object> verifySmsOTP1(@PathVariable String otp, @PathVariable String pno){
     	String token_message = "";
 		String type="";
 		Map<String, String> data = new HashMap<>();
@@ -97,7 +106,6 @@ public class NotificationController {
     	
     	System.out.println(pno);
     	System.out.println(otp);
-    //	String otp1=request.getSession().getAttribute("otp").toString();
     	
     	int otp1= otpsService.getLatestOTPByPno(pno);
     	
@@ -106,6 +114,7 @@ public class NotificationController {
     	if(otp.equals(""+otp1)) {
     		
     	 User u= urepo.findByMobileNum(pno);
+    	 
     	 
     	 System.out.println(u.getFullName());
     	 
@@ -126,42 +135,31 @@ public class NotificationController {
  			
  			token_message = token;
     		 }
-    	 }
+    	 
  			
- 		 else {
+    	 }else {
  			token_message = "Invalid User information";
  		}
     		
+    	
+    	
+    	
+    	
+    
     	}
-    	
-    	
+		
+    
     	data.put("token", token_message);
 		data.put("type", type);
 		return new ResponseEntity<>(data, HttpStatus.OK);
     }
     
-    
-    
-    
 	
 	
-	
+	//---------------------------------------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/send-email")
-    public String sendEmail(@RequestBody Notification notification) {
-    	
-    	String message="";
-    	
-    	try {
-        // Assuming EmailRequest is a DTO containing 'to', 'subject', and 'body' fields
-       emailService.sendEmail(notification.getReceiver(), notification.getSubject(), notification.getBody());
-       message="Email sent successfully";
-    	}
-    	catch(Exception e) {
-    		message=e.getMessage();
-    	}
-       return message;
-    }
+    
+ 
     
     @PostMapping("loginWithOTP/{email}")
     public String loginWithOTP(@PathVariable String email, HttpServletRequest request) {
@@ -195,20 +193,58 @@ public class NotificationController {
     
     @PostMapping("verifyOTP/{otp}/{email}")
     public ResponseEntity<?> verifyOTP(@PathVariable String otp, @PathVariable String email, HttpServletRequest request) {
+    	String token_message = "";
+		String type="";
+		Map<String, String> data = new HashMap<>();
+
     	
     	System.out.println(email);
     	System.out.println(otp);
-    	String otp1=request.getSession().getAttribute("otp").toString();
-
-    	if(otp1 == request.getSession().getAttribute("otp")) {
+    	
+    	int otp1= emailotpService.getLatestOTPByEmail(email);
+    	
+    	
+    	System.out.println(""+otp1);
+    	if(otp.equals(""+otp1)) {
     		
     	 User u= urepo.findByEmail(email);
-    	 return ResponseEntity.ok(u);
+    	 
+    	 System.out.println(u.getFullName());
+    	 
+    	 
+    	 
+    	 if (u != null) {
+    		 if(u.getStatus()!=1) {
+    			 token_message="Unapproved User";
+    		 }
+    		 else {
+ 			// The code to convert user information into JWT token
+ 			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
+ 					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
+ 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+ 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
+ 					.compact();
+ 			type=u.getUser_type();
+ 			
+ 			token_message = token;
+    		 }
+    	 
+ 			
+    	 }else {
+ 			token_message = "Invalid User information";
+ 		}
     		
+    	
+    	
+    	
+    	
+    
     	}
-    	else {
-    		return ResponseEntity.status(HttpStatusCode.valueOf(404)).body("User not found with username: " + email);
-    	}
+		
+    
+    	data.put("token", token_message);
+		data.put("type", type);
+		return new ResponseEntity<>(data, HttpStatus.OK);
     	
     	
     }

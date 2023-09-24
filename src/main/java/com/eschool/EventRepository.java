@@ -16,6 +16,13 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 	long count();
 	
 	List<Event> findAllByStartDateGreaterThan(Date date);
+	
+	List<Event> findAll();
+	
+	List<Event> findEventsByStatus(int status);
+
+
+	
 
 
 	@Query("SELECT u.eventName FROM Event u WHERE u.event_id = :id")

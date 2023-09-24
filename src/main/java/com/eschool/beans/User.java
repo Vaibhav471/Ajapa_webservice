@@ -25,7 +25,6 @@ public class User {
 	
 	String mobileNum;
 	
-	
 	String password;
 	
 	String gender, whatsapp_num, blood_grp, occupation, qualification, address_linep,address_lines, country, state, city, diksha_dt;
@@ -35,12 +34,14 @@ public class User {
     
     String user_type="member";
     
+    int familyId;
     
-    
-	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName,
-			String dob, String mobileNum, String password, String gender, String whatsapp_num,
-			String blood_grp, String occupation, String qualification, String address_linep, String address_lines,
-			String country, String state, String city, String diksha_dt, int age, double pincode, int status, String user_type) {
+    String identifier;
+
+	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName, String dob,
+			String mobileNum, String password, String gender, String whatsapp_num, String blood_grp, String occupation,
+			String qualification, String address_linep, String address_lines, String country, String state, String city,
+			String diksha_dt, int age, double pincode, int status, String user_type, int familyId, String identifier) {
 		this.id = id;
 		this.email = email;
 		this.fullName = fullName;
@@ -62,279 +63,200 @@ public class User {
 		this.pincode = pincode;
 		this.status = status;
 		this.user_type = user_type;
+		this.familyId = familyId;
+		this.identifier = identifier;
 	}
-
-
 
 	public User() {
-
 	}
-
-
 
 	public int getId() {
 		return id;
 	}
 
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
-
 
 	public String getEmail() {
 		return email;
 	}
 
-
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
 
 	public String getFullName() {
 		return fullName;
 	}
 
-
-
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
-
-
 
 	public String getDob() {
 		return dob;
 	}
 
-
-
 	public void setDob(String dob) {
 		this.dob = dob;
 	}
-
-
 
 	public String getMobileNum() {
 		return mobileNum;
 	}
 
-
-
 	public void setMobileNum(String mobileNum) {
 		this.mobileNum = mobileNum;
 	}
-
-
 
 	public String getPassword() {
 		return password;
 	}
 
-
-
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-
 
 	public String getGender() {
 		return gender;
 	}
 
-
-
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-
-
 
 	public String getWhatsapp_num() {
 		return whatsapp_num;
 	}
 
-
-
 	public void setWhatsapp_num(String whatsapp_num) {
 		this.whatsapp_num = whatsapp_num;
 	}
-
-
 
 	public String getBlood_grp() {
 		return blood_grp;
 	}
 
-
-
 	public void setBlood_grp(String blood_grp) {
 		this.blood_grp = blood_grp;
 	}
-
-
 
 	public String getOccupation() {
 		return occupation;
 	}
 
-
-
 	public void setOccupation(String occupation) {
 		this.occupation = occupation;
 	}
-
-
 
 	public String getQualification() {
 		return qualification;
 	}
 
-
-
 	public void setQualification(String qualification) {
 		this.qualification = qualification;
 	}
-
-
 
 	public String getAddress_linep() {
 		return address_linep;
 	}
 
-
-
 	public void setAddress_linep(String address_linep) {
 		this.address_linep = address_linep;
 	}
-
-
 
 	public String getAddress_lines() {
 		return address_lines;
 	}
 
-
-
 	public void setAddress_lines(String address_lines) {
 		this.address_lines = address_lines;
 	}
-
-
 
 	public String getCountry() {
 		return country;
 	}
 
-
-
 	public void setCountry(String country) {
 		this.country = country;
 	}
-
-
 
 	public String getState() {
 		return state;
 	}
 
-
-
 	public void setState(String state) {
 		this.state = state;
 	}
-
-
 
 	public String getCity() {
 		return city;
 	}
 
-
-
 	public void setCity(String city) {
 		this.city = city;
 	}
-
-
 
 	public String getDiksha_dt() {
 		return diksha_dt;
 	}
 
-
-
 	public void setDiksha_dt(String diksha_dt) {
 		this.diksha_dt = diksha_dt;
 	}
-
-
 
 	public int getAge() {
 		return age;
 	}
 
-
-
 	public void setAge(int age) {
 		this.age = age;
 	}
-
-
 
 	public double getPincode() {
 		return pincode;
 	}
 
-
-
 	public void setPincode(double pincode) {
 		this.pincode = pincode;
 	}
-
-
 
 	public int getStatus() {
 		return status;
 	}
 
-
-
 	public void setStatus(int status) {
 		this.status = status;
 	}
-
-
 
 	public String getUser_type() {
 		return user_type;
 	}
 
-
-
 	public void setUser_type(String user_type) {
 		this.user_type = user_type;
 	}
+
+	public int getFamilyId() {
+		return familyId;
+	}
+
+	public void setFamilyId(int familyId) {
+		this.familyId = familyId;
+	}
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+    
+    
+    
 	
-	private String identifier; // Can be email or mobile number
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    
-    
-    
 
 	
 }

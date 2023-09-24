@@ -15,10 +15,13 @@ public class Event {
 	@Id
 	private int event_id;
 	private String eventName,event_type,event_location,listed_by,start_time,end_time;
-	private int event_status;
+	private int event_status=1;
 	private Blob other;
 	Date startDate;
 	Date endDate;
+	 private Date lockArrivalDate;
+	    
+	    private Date lockDepartureDate;
 	
 	
 	
@@ -35,26 +38,9 @@ public class Event {
 
 
 	public Event(int event_id, String eventName, String event_type, String event_location, String listed_by,
-			String start_time, String end_time, int event_status, Date startDate, Date endDate) {
-		this.event_id = event_id;
-		this.eventName = eventName;
-		this.event_type = event_type;
-		this.event_location = event_location;
-		this.listed_by = listed_by;
-		this.start_time = start_time;
-		this.end_time = end_time;
-		this.event_status = event_status;
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
-
-
-
-
-
-
-	public Event(int event_id, String eventName, String event_type, String event_location, String listed_by,
-			String start_time, String end_time, int event_status, Blob other, Date startDate, Date endDate) {
+			String start_time, String end_time, int event_status, Blob other, Date startDate, Date endDate,
+			Date lockArrivalDate, Date lockDepartureDate) {
+		super();
 		this.event_id = event_id;
 		this.eventName = eventName;
 		this.event_type = event_type;
@@ -66,6 +52,8 @@ public class Event {
 		this.other = other;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.lockArrivalDate = lockArrivalDate;
+		this.lockDepartureDate = lockDepartureDate;
 	}
 
 
@@ -85,13 +73,6 @@ public class Event {
 	public void setEvent_id(int event_id) {
 		this.event_id = event_id;
 	}
-
-
-
-
-
-
-	
 
 
 
@@ -258,18 +239,60 @@ public class Event {
 
 
 
+
+
 	public Date getEndDate() {
 		return endDate;
 	}
 
 
 
+
+
+
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
+
+	public Date getLockArrivalDate() {
+		return lockArrivalDate;
+	}
+
+
+
+
+
+
+	public void setLockArrivalDate(Date lockArrivalDate) {
+		this.lockArrivalDate = lockArrivalDate;
+	}
+
+
+
+
+
+
+	public Date getLockDepartureDate() {
+		return lockDepartureDate;
+	}
+
+
+
+
+
+
+	public void setLockDepartureDate(Date lockDepartureDate) {
+		this.lockDepartureDate = lockDepartureDate;
+	}
+
+
+
+
+
+
 }

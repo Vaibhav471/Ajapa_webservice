@@ -3,7 +3,10 @@ package com.eschool;
 import java.io.File;
 
 
+
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,12 +15,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eschool.beans.Event;
+import com.eschool.beans.Notification;
+import com.eschool.beans.Travel;
+import com.eschool.beans.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -48,8 +51,46 @@ public class EventController {
 	@Autowired
 	ServletContext context;
 	
+	@Autowired
+    TravelRepository trepo;
+	
+	@Autowired
+	UserRepository urepo;
+	
 	@PersistenceContext
     private EntityManager entityManager; // Inject the EntityManager
+	
+	@Autowired
+    private NotificationService emailService;
+	
+public String sendEmail(Notification notification) {
+    	
+    	String message="";
+    	
+    	try {
+        // Assuming EmailRequest is a DTO containing 'to', 'subject', and 'body' fields
+       emailService.sendEmail(notification.getReceiver(), notification.getSubject(), notification.getBody());
+       message="Email sent successfully";
+    	}
+    	catch(Exception e) {
+    		message=e.getMessage();
+    	}
+       return message;
+    }
+
+
+void sendSMS(String pno,String msg)
+{
+try {
+String requestUrl  = "http://login.easywaysms.com/app/smsapi/index.php?key=364844DA3CBEC7&campaign=0&routeid=7&type=text&contacts="+pno+"&%20senderid=TOMKUM&msg="+msg;
+URL url = new URL(requestUrl);
+HttpURLConnection uc = (HttpURLConnection)url.openConnection();
+System.out.println(uc.getResponseMessage());
+uc.disconnect();
+} catch(Exception ex) {
+System.out.println("Error"+ex.getMessage());
+}
+}
 	
 	
 	
@@ -72,7 +113,9 @@ public class EventController {
 			
 			Map<String, String> data = new HashMap();
 	        data.put("token", message);
-	        return new ResponseEntity<>(data, HttpStatus.OK);	
+	        return new ResponseEntity<>(data, HttpStatus.OK);
+	        
+	        
 	        
 			
 	        }
@@ -225,11 +268,11 @@ public class EventController {
 		    
 		    if (start >= 0 && end < events.size() && start <= end) {
 		    	
-		        return events.subList(start, end);
+		        return events.subList(start-1, end);
 		    } 
 		    else if (start >= 0 && start <= end) 
 		    {
-		    	return events.subList(start, events.size());
+		    	return events.subList(start-1, events.size());
 		    }
 		    else  {
 		        // Handle invalid start and end values, e.g., return an empty list or an error response.
@@ -260,5 +303,54 @@ public class EventController {
 	    	System.out.println(d1.toString());
 	    	return erepo.findAllByStartDateGreaterThan(d1);
 	    }
+	    
+	    //-------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    @GetMapping("getAllEvents")
+	    public List<Event> getAllEvents(){
+	    	
+	    	return erepo.findAll();
+	    }
+	    
+	    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    @PostMapping("deleteEvent/{eventId}")
+	    public String deleteEvent(@PathVariable int eventId) {
+	    	String message="";
+	    	
+	    	try {
+	    	Event e=erepo.findById(eventId);
+	    	e.setEvent_status(2);
+	    	erepo.save(e);
+	    	message="Event deketed";
+	    	}
+	    	catch(Exception e) {
+	    		message=e.getMessage();
+	    	}
+	    	return message;
+	    }
+	    
+	    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    @PostMapping("sendSmsByEventId/{eventId}")
+	    public String sendSmsByEventId(@PathVariable int eventId, @RequestBody String message) {
+	    	String message1="";
+	    	
+	    	List<Travel> travel=trepo.findAllByEventId(eventId);
+	    	System.out.println(travel);
+	    	System.out.println(travel.size());
+	    	
+
+	    	for(Travel t:travel) {
+	    		System.out.println(t.getUserId());	
+	         //urepo.findMobileNumById(t.getUserId());
+	    User user=urepo.findById(t.getUserId());
+	    
+	         System.out.println(user.getMobileNum());
+	    	//sendSMS(user.getMobileNum(),message);
+	    	}
+	    	return message1;
+	    	
+	    	
+	    }
+	    
+	    
 
 }

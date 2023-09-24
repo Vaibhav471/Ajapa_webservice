@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eschool.beans.Notification;
 import com.eschool.beans.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,25 +47,104 @@ public class UserController {
 	@PersistenceContext
 	private EntityManager entityManager;
 	private final UserService userService;
+	@Autowired
+    private NotificationService emailService;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+    
+public String sendEmail(Notification notification) {
+    	
+    	String message="";
+    	
+    	try {
+        // Assuming EmailRequest is a DTO containing 'to', 'subject', and 'body' fields
+       emailService.sendEmail(notification.getReceiver(), notification.getSubject(), notification.getBody());
+       message="Email sent successfully";
+    	}
+    	catch(Exception e) {
+    		message=e.getMessage();
+    	}
+       return message;
     }
 
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		message="";
 		Map<String, String> data = new HashMap<>();
+		
+		
+		
+		
 		try {
+			
 			urepo.save(user);
-			message = "Data saved successfully";			
+			int id1 = urepo.findIdByEmail(user.getEmail());
+			System.out.println(id1);
+			User u= urepo.findByEmail(user.getEmail());
+			u.setFamilyId(id1);
+			urepo.save(u);
+			message = "Data saved successfully";
+			
+			
+			
 		} catch (Exception e) {
 			message = e.getMessage();
 		}		
 		data.put("msg", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	
+	@PostMapping("signup2")
+	public ResponseEntity<Object> saveUser2(@RequestBody User user, @RequestHeader("Authorization") String authorizationHeader) {
+		message="";
+		Map<String, String> data = new HashMap<>();
+		
+		int id=0;
+		//System.out.println(authorizationHeader);// token from header displayed on console The code to decode the JWT token sent by client
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
+			//System.out.println(jwtToken);
+			try {
+				Base64.Decoder decoder = Base64.getUrlDecoder();
+				String chunks[] = jwtToken.split("\\.");
+				String header = new String(decoder.decode(chunks[0]));
+				String payload = new String(decoder.decode(chunks[1]));
+				System.out.println(header);
+				System.out.println(payload);
+				ObjectMapper mapper = new ObjectMapper();
+				Map<String, Object> map = mapper.readValue(payload, Map.class);
+				System.out.println("this is our email");
+				System.out.println(map.get("email"));
+				System.out.println(map.get("id"));
+				id=Integer.parseInt(map.get("family_id").toString());
+				System.out.println("our id is "+id);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Failed to decode JWT: " + e.getMessage());
+			}
+		}
+		
+		
+		try {
+			
+			user.setFamilyId(id);
+			
+			urepo.save(user);
+			message = "Data saved successfully";
+			
+			
+			
+		} catch (Exception e) {
+			message = e.getMessage();
+		}		
+		data.put("msg", message);
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+	
 	// --------------------------------LOGIN------------------------------------------------------------------------------------------------------
 	@PostMapping("login")
 	public ResponseEntity<Object> login(@RequestBody User user) {
@@ -76,7 +156,9 @@ public class UserController {
 		 String identifier = user.getIdentifier();
         String password = user.getPassword();
         User u = userService.getUserByEmailOrMobileNumberAndPassword(identifier, password);
-		System.out.println(u);
+        System.out.println("this is our user");
+        System.out.println(u);
+		
 		if (u != null) {
 			if(u.getStatus()!=1) {
 				token_message="Unapproved User";
@@ -84,7 +166,7 @@ public class UserController {
 			else {
 			// The code to convert user information into JWT token
 			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
-					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
+					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type()).claim("family_id", u.getFamilyId())
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
@@ -174,6 +256,14 @@ public class UserController {
 			urepo.save(existingUser);
 
 			message = "user updated";
+			
+			Notification n=new Notification();
+			n.setReceiver(email);
+			n.setSubject("update information");
+			n.setBody("your profile has been updated successfully");
+			
+			
+			sendEmail(n);
 		}
 
 		else {
@@ -369,4 +459,37 @@ public class UserController {
 			return urepo.countByStatus(0);
 			
 		}
+		
+		//----------------------------------------------------------------------------------------------------
+				@GetMapping("getFamilyMembers/{family_id}")
+				public List<User> getFamilyMembers(@PathVariable int family_id) {
+					
+					return urepo.findUsersByFamilyId(family_id);
+					
+				}
+				
+	//----------------------------------------------------------------------------------------------------------------------------------			
+				@PostMapping("rejectUser/{email}")
+				public ResponseEntity<Object> rejectUser(@PathVariable String email) {
+
+					String message = "";
+
+					User existingUser = urepo.findByEmail(email);
+
+					if (existingUser != null) {
+
+						existingUser.setStatus(2);
+						urepo.save(existingUser);
+						message="User deleted";
+					}
+					Map<String, String> data = new HashMap();
+					data.put("token", message);
+					return new ResponseEntity<>(data, HttpStatus.OK);
+				}
+	//			-------------------------------------------------------------------------------------------------
+				@GetMapping("getRejectedUsers")
+				public List<User> getRejectedUsers(){
+					
+					return urepo.findUsersByStatus(2);
+				}
 }

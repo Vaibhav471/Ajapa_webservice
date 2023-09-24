@@ -23,5 +23,13 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	
 	@Query("SELECT u.fullName FROM User u WHERE u.id = :id")
     String findUserNameByUserId(int id);
+	
+	int findFamilyIdByEmail(String email);
+	
+	@Query("SELECT u.id FROM User u WHERE u.email = :email")
+    int findIdByEmail(@Param("email") String email);
+	List<User> findUsersByFamilyId(int id);
+	
+	String findMobileNumById(int id);
 }
 

@@ -32,6 +32,10 @@ public class UserService {
     public User getUserByEmail(String email) {
         return urepo.findByEmail(email);
     }
+    
+    public User getUserById(int id) {
+        return urepo.findById(id);
+    }
     // This function should have void return type
     public User saveUser(User user) {
         return urepo.save(user);
