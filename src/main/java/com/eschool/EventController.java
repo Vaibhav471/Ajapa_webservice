@@ -78,6 +78,47 @@ public String sendEmail(Notification notification) {
        return message;
     }
 
+public int getEventIdByEmail(String email) {
+	
+
+	String message="";
+	int eventId=0;
+	
+	try {
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	Connection connection=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+	
+	 // Prepare the SQL query
+    String query = "SELECT MAX(event_id) as event_id FROM event WHERE listed_by = ?";
+    PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+	preparedStatement.setString(1,email);
+
+    // Execute the query
+    ResultSet resultSet = preparedStatement.executeQuery();
+
+    // Process the result
+    if (resultSet.next()) {
+         eventId = resultSet.getInt("event_id");
+       
+    } else {
+        System.out.println("No events found.");
+    }
+
+    // Close resources
+    resultSet.close();
+    preparedStatement.close();
+    connection.close();
+} 
+	
+	catch (Exception e) {
+    e.printStackTrace();
+}			
+	return eventId;
+	
+}
+
+
 
 void sendSMS(String pno,String msg)
 {
@@ -101,18 +142,24 @@ System.out.println("Error"+ex.getMessage());
 		
 		public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 			
-			
+			int event_id=0;
 			String message = "";
 			
 			try {
-			erepo.save(event);
+		    Event e=erepo.save(event);
+		   event_id=e.getEvent_id();
+		    
+		    
 			message="event created successfully";
 			}
 			catch(Exception e) {
 				message=e.getMessage();		}
 			
+			int eventId=getEventIdByEmail(event.getListed_by());
+			
 			Map<String, String> data = new HashMap();
 	        data.put("token", message);
+	        data.put("eventId",""+event_id);
 	        return new ResponseEntity<>(data, HttpStatus.OK);
 	        
 	        
@@ -340,7 +387,6 @@ System.out.println("Error"+ex.getMessage());
 
 	    	for(Travel t:travel) {
 	    		System.out.println(t.getUserId());	
-	         //urepo.findMobileNumById(t.getUserId());
 	    User user=urepo.findById(t.getUserId());
 	    
 	         System.out.println(user.getMobileNum());

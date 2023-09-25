@@ -19,7 +19,6 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 	
 	List<Event> findAll();
 	
-	List<Event> findEventsByStatus(int status);
 
 
 	

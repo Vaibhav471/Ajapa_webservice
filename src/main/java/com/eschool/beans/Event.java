@@ -55,6 +55,7 @@ public class Event {
 		this.lockArrivalDate = lockArrivalDate;
 		this.lockDepartureDate = lockDepartureDate;
 	}
+	
 
 
 
