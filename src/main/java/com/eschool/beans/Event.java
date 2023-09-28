@@ -13,9 +13,9 @@ import jakarta.persistence.Table;
 public class Event {
 	
 	@Id
-	private int event_id;
-	private String eventName,event_type,event_location,listed_by,start_time,end_time;
-	private int event_status=1;
+	private int eventId;
+	private String eventName,eventType,eventLocation,listedBy,startTime,endTime;
+	private int eventStatus=1;
 	private Blob other;
 	Date startDate;
 	Date endDate;
@@ -37,33 +37,31 @@ public class Event {
 
 
 
-	public Event(int event_id, String eventName, String event_type, String event_location, String listed_by,
-			String start_time, String end_time, int event_status, Blob other, Date startDate, Date endDate,
+	public Event(int eventId, String eventName, String eventType, String eventLocation, String listedBy,
+			String startTime, String endTime, int eventStatus, Blob other, Date startDate, Date endDate,
 			Date lockArrivalDate, Date lockDepartureDate) {
-		super();
-		this.event_id = event_id;
+		this.eventId = eventId;
 		this.eventName = eventName;
-		this.event_type = event_type;
-		this.event_location = event_location;
-		this.listed_by = listed_by;
-		this.start_time = start_time;
-		this.end_time = end_time;
-		this.event_status = event_status;
+		this.eventType = eventType;
+		this.eventLocation = eventLocation;
+		this.listedBy = listedBy;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.eventStatus = eventStatus;
 		this.other = other;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.lockArrivalDate = lockArrivalDate;
 		this.lockDepartureDate = lockDepartureDate;
 	}
-	
 
 
 
 
 
 
-	public int getEvent_id() {
-		return event_id;
+	public int getEventId() {
+		return eventId;
 	}
 
 
@@ -71,8 +69,8 @@ public class Event {
 
 
 
-	public void setEvent_id(int event_id) {
-		this.event_id = event_id;
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
 	}
 
 
@@ -98,8 +96,8 @@ public class Event {
 
 
 
-	public String getEvent_type() {
-		return event_type;
+	public String getEventType() {
+		return eventType;
 	}
 
 
@@ -107,8 +105,8 @@ public class Event {
 
 
 
-	public void setEvent_type(String event_type) {
-		this.event_type = event_type;
+	public void setEventType(String eventType) {
+		this.eventType = eventType;
 	}
 
 
@@ -116,8 +114,8 @@ public class Event {
 
 
 
-	public String getEvent_location() {
-		return event_location;
+	public String getEventLocation() {
+		return eventLocation;
 	}
 
 
@@ -125,8 +123,8 @@ public class Event {
 
 
 
-	public void setEvent_location(String event_location) {
-		this.event_location = event_location;
+	public void setEventLocation(String eventLocation) {
+		this.eventLocation = eventLocation;
 	}
 
 
@@ -134,8 +132,8 @@ public class Event {
 
 
 
-	public String getListed_by() {
-		return listed_by;
+	public String getListedBy() {
+		return listedBy;
 	}
 
 
@@ -143,8 +141,8 @@ public class Event {
 
 
 
-	public void setListed_by(String listed_by) {
-		this.listed_by = listed_by;
+	public void setListedBy(String listedBy) {
+		this.listedBy = listedBy;
 	}
 
 
@@ -152,8 +150,8 @@ public class Event {
 
 
 
-	public String getStart_time() {
-		return start_time;
+	public String getStartTime() {
+		return startTime;
 	}
 
 
@@ -161,8 +159,8 @@ public class Event {
 
 
 
-	public void setStart_time(String start_time) {
-		this.start_time = start_time;
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
 	}
 
 
@@ -170,8 +168,8 @@ public class Event {
 
 
 
-	public String getEnd_time() {
-		return end_time;
+	public String getEndTime() {
+		return endTime;
 	}
 
 
@@ -179,8 +177,8 @@ public class Event {
 
 
 
-	public void setEnd_time(String end_time) {
-		this.end_time = end_time;
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 
 
@@ -188,8 +186,8 @@ public class Event {
 
 
 
-	public int getEvent_status() {
-		return event_status;
+	public int getEventStatus() {
+		return eventStatus;
 	}
 
 
@@ -197,8 +195,8 @@ public class Event {
 
 
 
-	public void setEvent_status(int event_status) {
-		this.event_status = event_status;
+	public void setEventStatus(int eventStatus) {
+		this.eventStatus = eventStatus;
 	}
 
 
@@ -295,5 +293,7 @@ public class Event {
 
 
 
+
+	
 
 }

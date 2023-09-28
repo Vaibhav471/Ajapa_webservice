@@ -147,7 +147,7 @@ System.out.println("Error"+ex.getMessage());
 			
 			try {
 		    Event e=erepo.save(event);
-		   event_id=e.getEvent_id();
+		   event_id=e.getEventId();
 		    
 		    
 			message="event created successfully";
@@ -155,7 +155,7 @@ System.out.println("Error"+ex.getMessage());
 			catch(Exception e) {
 				message=e.getMessage();		}
 			
-			int eventId=getEventIdByEmail(event.getListed_by());
+			int eventId=getEventIdByEmail(event.getListedBy());
 			
 			Map<String, String> data = new HashMap();
 	        data.put("token", message);
@@ -177,16 +177,16 @@ System.out.println("Error"+ex.getMessage());
 			
 			Event existingEvent = erepo.findById(id);
 			
-			existingEvent.setEvent_location(event.getEvent_location());
+			existingEvent.setEventLocation(event.getEventLocation());
 			existingEvent.setEventName(event.getEventName());
-			existingEvent.setEvent_type(event.getEvent_type());
+			existingEvent.setEventType(event.getEventType());
 			existingEvent.setEndDate(event.getEndDate());
-			existingEvent.setListed_by(event.getListed_by());
+			existingEvent.setListedBy(event.getListedBy());
 			existingEvent.setStartDate(event.getStartDate());
-			existingEvent.setEvent_status(event.getEvent_status());
+			existingEvent.setEventStatus(event.getEventStatus());
 			existingEvent.setOther(event.getOther());
-			existingEvent.setStart_time(event.getStart_time());
-			existingEvent.setEnd_time(event.getEnd_time());
+			existingEvent.setStartTime(event.getStartTime());
+			existingEvent.setEndTime(event.getEndTime());
 
 
 
@@ -358,6 +358,13 @@ System.out.println("Error"+ex.getMessage());
 	    	return erepo.findAll();
 	    }
 	    
+	    //----------------------------------------------------------------------------------------------------------------
+	    @GetMapping("getAllActiveEvents")
+	    public List<Event> getAllActiveEvents(){
+	    	
+	    	return erepo.findAllByOrderByStartDateDesc();
+	    }
+	    
 	    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    @PostMapping("deleteEvent/{eventId}")
 	    public String deleteEvent(@PathVariable int eventId) {
@@ -365,7 +372,7 @@ System.out.println("Error"+ex.getMessage());
 	    	
 	    	try {
 	    	Event e=erepo.findById(eventId);
-	    	e.setEvent_status(2);
+	    	e.setEventStatus(2);
 	    	erepo.save(e);
 	    	message="Event deketed";
 	    	}
@@ -396,6 +403,9 @@ System.out.println("Error"+ex.getMessage());
 	    	
 	    	
 	    }
+	    
+	    //----------------------------------------------------------------------------------------------------------------------
+	    
 	    
 	    
 

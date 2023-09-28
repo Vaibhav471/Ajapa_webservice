@@ -11,19 +11,15 @@ public class EventPermission {
 	@Id
 	int id;
 	int eventId;
-	int adminId;
-	String canRead,canWrite;
+	String adminId;
+	String canModify,canDelete;
 	
-	public EventPermission(int id, int eventId, int adminId, String canRead, String canWrite) {
+	public EventPermission(int id, int eventId, String adminId, String canModify, String canDelete) {
 		this.id = id;
 		this.eventId = eventId;
 		this.adminId = adminId;
-		this.canRead = canRead;
-		this.canWrite = canWrite;
-	}
-
-	public EventPermission() {
-
+		this.canModify = canModify;
+		this.canDelete = canDelete;
 	}
 
 	public int getId() {
@@ -42,30 +38,32 @@ public class EventPermission {
 		this.eventId = eventId;
 	}
 
-	public int getAdminId() {
+	public String getAdminId() {
 		return adminId;
 	}
 
-	public void setAdminId(int adminId) {
+	public void setAdminId(String adminId) {
 		this.adminId = adminId;
 	}
 
-	public String getCanRead() {
-		return canRead;
+	public String getCanModify() {
+		return canModify;
 	}
 
-	public void setCanRead(String canRead) {
-		this.canRead = canRead;
+	public void setCanModify(String canModify) {
+		this.canModify = canModify;
 	}
 
-	public String getCanWrite() {
-		return canWrite;
+	public String getCanDelete() {
+		return canDelete;
 	}
 
-	public void setCanWrite(String canWrite) {
-		this.canWrite = canWrite;
+	public void setCanDelete(String canDelete) {
+		this.canDelete = canDelete;
+	}
+
+	public EventPermission() {
 	}
 	
 	
-
 }

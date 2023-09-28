@@ -27,21 +27,27 @@ public class User {
 	
 	String password;
 	
-	String gender, whatsapp_num, blood_grp, occupation, qualification, address_linep,address_lines, country, state, city, diksha_dt;
+	String gender, bloodGrp, occupation, qualification, addressLinep,addressLines, country, state, city, dikshaDt;
     int age;
+    String whatsappNum;
     double pincode;
     int status;
     
-    String user_type="member";
+    String userType="member";
     
     int familyId;
     
     String identifier;
+    
+    boolean isAdmin;
+
+	
 
 	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName, String dob,
-			String mobileNum, String password, String gender, String whatsapp_num, String blood_grp, String occupation,
-			String qualification, String address_linep, String address_lines, String country, String state, String city,
-			String diksha_dt, int age, double pincode, int status, String user_type, int familyId, String identifier) {
+			String mobileNum, String password, String gender, String bloodGrp, String occupation, String qualification,
+			String addressLinep, String addressLines, String country, String state, String city, String dikshaDt,
+			int age, String whatsappNum, double pincode, int status, String userType, int familyId, String identifier,
+			boolean isAdmin) {
 		this.id = id;
 		this.email = email;
 		this.fullName = fullName;
@@ -49,25 +55,23 @@ public class User {
 		this.mobileNum = mobileNum;
 		this.password = password;
 		this.gender = gender;
-		this.whatsapp_num = whatsapp_num;
-		this.blood_grp = blood_grp;
+		this.bloodGrp = bloodGrp;
 		this.occupation = occupation;
 		this.qualification = qualification;
-		this.address_linep = address_linep;
-		this.address_lines = address_lines;
+		this.addressLinep = addressLinep;
+		this.addressLines = addressLines;
 		this.country = country;
 		this.state = state;
 		this.city = city;
-		this.diksha_dt = diksha_dt;
+		this.dikshaDt = dikshaDt;
 		this.age = age;
+		this.whatsappNum = whatsappNum;
 		this.pincode = pincode;
 		this.status = status;
-		this.user_type = user_type;
+		this.userType = userType;
 		this.familyId = familyId;
 		this.identifier = identifier;
-	}
-
-	public User() {
+		this.isAdmin = isAdmin;
 	}
 
 	public int getId() {
@@ -126,20 +130,20 @@ public class User {
 		this.gender = gender;
 	}
 
-	public String getWhatsapp_num() {
-		return whatsapp_num;
+	public String getWhatsappNum() {
+		return whatsappNum;
 	}
 
-	public void setWhatsapp_num(String whatsapp_num) {
-		this.whatsapp_num = whatsapp_num;
+	public void setWhatsappNum(String whatsappNum) {
+		this.whatsappNum = whatsappNum;
 	}
 
-	public String getBlood_grp() {
-		return blood_grp;
+	public String getBloodGrp() {
+		return bloodGrp;
 	}
 
-	public void setBlood_grp(String blood_grp) {
-		this.blood_grp = blood_grp;
+	public void setBloodGrp(String bloodGrp) {
+		this.bloodGrp = bloodGrp;
 	}
 
 	public String getOccupation() {
@@ -158,20 +162,20 @@ public class User {
 		this.qualification = qualification;
 	}
 
-	public String getAddress_linep() {
-		return address_linep;
+	public String getAddressLinep() {
+		return addressLinep;
 	}
 
-	public void setAddress_linep(String address_linep) {
-		this.address_linep = address_linep;
+	public void setAddressLinep(String addressLinep) {
+		this.addressLinep = addressLinep;
 	}
 
-	public String getAddress_lines() {
-		return address_lines;
+	public String getAddressLines() {
+		return addressLines;
 	}
 
-	public void setAddress_lines(String address_lines) {
-		this.address_lines = address_lines;
+	public void setAddressLines(String addressLines) {
+		this.addressLines = addressLines;
 	}
 
 	public String getCountry() {
@@ -198,12 +202,12 @@ public class User {
 		this.city = city;
 	}
 
-	public String getDiksha_dt() {
-		return diksha_dt;
+	public String getDikshaDt() {
+		return dikshaDt;
 	}
 
-	public void setDiksha_dt(String diksha_dt) {
-		this.diksha_dt = diksha_dt;
+	public void setDikshaDt(String dikshaDt) {
+		this.dikshaDt = dikshaDt;
 	}
 
 	public int getAge() {
@@ -230,12 +234,12 @@ public class User {
 		this.status = status;
 	}
 
-	public String getUser_type() {
-		return user_type;
+	public String getUserType() {
+		return userType;
 	}
 
-	public void setUser_type(String user_type) {
-		this.user_type = user_type;
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}
 
 	public int getFamilyId() {
@@ -253,10 +257,23 @@ public class User {
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-    
-    
-    
+	
 	
 
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public User() {
+
+	}
+	
+	
+
+	
 	
 }

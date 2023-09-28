@@ -14,6 +14,8 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	List<User> findAll();
 	User  findById(int id);
 	List<User> findUsersByStatus(int status);
+	
+	List<User> findByIsAdminTrue();
 	User findByMobileNum(String mobileNum);
 	
 	@Query("SELECT u FROM User u WHERE (u.email = :identifier OR u.mobileNum = :identifier) AND u.password = :password")

@@ -120,7 +120,7 @@ public String sendEmail(Notification notification) {
 				System.out.println("this is our email");
 				System.out.println(map.get("email"));
 				System.out.println(map.get("id"));
-				id=Integer.parseInt(map.get("family_id").toString());
+				id=Integer.parseInt(map.get("familyId").toString());
 				System.out.println("our id is "+id);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -150,6 +150,8 @@ public String sendEmail(Notification notification) {
 	public ResponseEntity<Object> login(@RequestBody User user) {
 		String token_message = "";
 		String type="";
+		String isAdmin="";
+
 		Map<String, String> data = new HashMap<>();
 		try
 		{
@@ -165,12 +167,13 @@ public String sendEmail(Notification notification) {
 			}
 			else {
 			// The code to convert user information into JWT token
-			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
-					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type()).claim("family_id", u.getFamilyId())
+			String token = Jwts.builder().claim("fullName", u.getFullName()).claim("email", u.getEmail())
+					.claim("mobileNumber", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUserType()).claim("familyId", u.getFamilyId())
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
-			type=u.getUser_type();
+			type=u.getUserType();
+			isAdmin=""+u.isAdmin();
 			
 			token_message = token;
 			}
@@ -186,6 +189,8 @@ public String sendEmail(Notification notification) {
 		}
 		data.put("token", token_message);
 		data.put("type", type);
+		data.put("isAdmin",isAdmin );
+
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
@@ -232,15 +237,15 @@ public String sendEmail(Notification notification) {
 			if (user.getGender() != null) {
 				existingUser.setGender(user.getGender());
 			}
-			existingUser.setWhatsapp_num(user.getWhatsapp_num());
+			existingUser.setWhatsappNum(user.getWhatsappNum());
 			if (user.getPassword() != null) {
 				existingUser.setPassword(user.getPassword());
 			}
-			existingUser.setBlood_grp(user.getBlood_grp());
+			existingUser.setBloodGrp(user.getBloodGrp());
 			existingUser.setOccupation(user.getOccupation());
 			existingUser.setQualification(user.getQualification());
-			existingUser.setAddress_linep(user.getAddress_linep());
-			existingUser.setAddress_lines(user.getAddress_lines());
+			existingUser.setAddressLinep(user.getAddressLinep());
+			existingUser.setAddressLines(user.getAddressLines());
 			if (user.getCountry() != null) {
 				existingUser.setCountry(user.getCountry());
 			}
@@ -249,7 +254,7 @@ public String sendEmail(Notification notification) {
 				existingUser.setCity(user.getCity());
 			}
 
-			existingUser.setDiksha_dt(user.getDiksha_dt());
+			existingUser.setDikshaDt(user.getDikshaDt());
 			existingUser.setAge(user.getAge());
 			existingUser.setPincode(user.getPincode());
 
@@ -491,5 +496,38 @@ public String sendEmail(Notification notification) {
 				public List<User> getRejectedUsers(){
 					
 					return urepo.findUsersByStatus(2);
+				}
+				
+				//------------------------------------------------------------------------------------------------------
+				@PostMapping("makeAdmin/{id}")
+				public void makeAdmin(@PathVariable int id) {
+					
+					User u=urepo.findById(id);
+					u.setAdmin(true);
+					
+					urepo.save(u);
+					
+				}
+				
+				//----------------------------------------------------------------------------------------------------------------------------------
+				@GetMapping("getApprovedUsers")
+				public List<User> getApprovedUsers(){
+					
+					return urepo.findUsersByStatus(1);
+				}
+	//---------------------------------------------------------------------------------------------------------------------------------------
+				@GetMapping("getAllAdmins")
+				public List<User> getAllAdmins(){
+					return urepo.findByIsAdminTrue();
+				}
+	//-----------------------------------------------------------------------------------------------------------------------------------------------
+				@PostMapping("changeAdminStatus/{id}")
+				public void changeAdminStatus(@PathVariable int id) {
+					
+					User u=urepo.findById(id);
+					u.setAdmin(false);
+					
+					urepo.save(u);
+					
 				}
 }

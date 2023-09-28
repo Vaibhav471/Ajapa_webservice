@@ -21,9 +21,10 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 	
 
 
+	List<Event> findAllByOrderByStartDateDesc();
 	
 
 
-	@Query("SELECT u.eventName FROM Event u WHERE u.event_id = :id")
+	@Query("SELECT u.eventName FROM Event u WHERE u.eventId = :id")
     String findEventNameByUserId(int id);
 }

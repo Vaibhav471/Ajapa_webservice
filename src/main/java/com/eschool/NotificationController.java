@@ -101,6 +101,8 @@ public class NotificationController {
     public ResponseEntity<Object> verifySmsOTP1(@PathVariable String otp, @PathVariable String pno){
     	String token_message = "";
 		String type="";
+		String isAdmin="";
+
 		Map<String, String> data = new HashMap<>();
 
     	
@@ -126,12 +128,13 @@ public class NotificationController {
     		 }
     		 else {
  			// The code to convert user information into JWT token
- 			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
- 					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
- 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
- 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
- 					.compact();
- 			type=u.getUser_type();
+ 			String token = Jwts.builder().claim("fullName", u.getFullName()).claim("email", u.getEmail())
+					.claim("mobileNumber", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUserType()).claim("familyId", u.getFamilyId())
+					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
+					.compact();
+ 			type=u.getUserType();
+ 			isAdmin=""+u.isAdmin();
  			
  			token_message = token;
     		 }
@@ -219,12 +222,12 @@ public class NotificationController {
     		 }
     		 else {
  			// The code to convert user information into JWT token
- 			String token = Jwts.builder().claim("full_name", u.getFullName()).claim("email", u.getEmail())
- 					.claim("mobile_number", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUser_type())
- 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
- 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
- 					.compact();
- 			type=u.getUser_type();
+ 			String token = Jwts.builder().claim("fullName", u.getFullName()).claim("email", u.getEmail())
+					.claim("mobileNumber", u.getMobileNum()).claim("id", u.getId()).claim("type", u.getUserType()).claim("familyId", u.getFamilyId())
+					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
+					.compact();
+ 			type=u.getUserType();
  			
  			token_message = token;
     		 }

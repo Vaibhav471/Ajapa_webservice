@@ -28,29 +28,29 @@ public class Travel {
    //@JoinTable(name="user",joinColumns={@JoinColumn(name="id")})
     private int userId;
 
-    private String from_city;
+    private String fromCity;
 
-    private String from_country;
+    private String fromCountry;
 
-    private Date arrival_date;
+    private Date arrivalDate;
 
-    private String arrival_time;
+    private String arrivalTime;
 
-    private String arrival_mode_of_transport;
+    private String arrivalModeOfTransport;
 
-    private String arrival_train_number;
+    private String arrivalTrainNumber;
 
-    private String arrival_train_name;
+    private String arrivalTrainName;
 
-    private Date departure_date;
+    private Date departureDate;
 
-    private String departure_time;
+    private String departureTime;
 
-    private String departure_mode_of_transport;
+    private String departureModeOfTransport;
 
-    private String departure_train_number;
+    private String departureTrainNumber;
 
-    private String departure_train_name;
+    private String departureTrainName;
     
     private String description;
     
@@ -76,26 +76,25 @@ public class Travel {
 
 
 
-	public Travel(int travel_id, int eventId, int userId, String from_city, String from_country, Date arrival_date,
-			String arrival_time, String arrival_mode_of_transport, String arrival_train_number,
-			String arrival_train_name, Date departure_date, String departure_time, String departure_mode_of_transport,
-			String departure_train_number, String departure_train_name, String description, Date lockArrivalDate,
-			Date lockDepartureDate, int familyId) {
+	public Travel(int travel_id, int eventId, int userId, String fromCity, String fromCountry, Date arrivalDate,
+			String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber, String arrivalTrainName,
+			Date departureDate, String departureTime, String departureModeOfTransport, String departureTrainNumber,
+			String departureTrainName, String description, Date lockArrivalDate, Date lockDepartureDate, int familyId) {
 		this.travel_id = travel_id;
 		this.eventId = eventId;
 		this.userId = userId;
-		this.from_city = from_city;
-		this.from_country = from_country;
-		this.arrival_date = arrival_date;
-		this.arrival_time = arrival_time;
-		this.arrival_mode_of_transport = arrival_mode_of_transport;
-		this.arrival_train_number = arrival_train_number;
-		this.arrival_train_name = arrival_train_name;
-		this.departure_date = departure_date;
-		this.departure_time = departure_time;
-		this.departure_mode_of_transport = departure_mode_of_transport;
-		this.departure_train_number = departure_train_number;
-		this.departure_train_name = departure_train_name;
+		this.fromCity = fromCity;
+		this.fromCountry = fromCountry;
+		this.arrivalDate = arrivalDate;
+		this.arrivalTime = arrivalTime;
+		this.arrivalModeOfTransport = arrivalModeOfTransport;
+		this.arrivalTrainNumber = arrivalTrainNumber;
+		this.arrivalTrainName = arrivalTrainName;
+		this.departureDate = departureDate;
+		this.departureTime = departureTime;
+		this.departureModeOfTransport = departureModeOfTransport;
+		this.departureTrainNumber = departureTrainNumber;
+		this.departureTrainName = departureTrainName;
 		this.description = description;
 		this.lockArrivalDate = lockArrivalDate;
 		this.lockDepartureDate = lockDepartureDate;
@@ -152,12 +151,24 @@ public class Travel {
 		return userId;
 	}
 
+
+
+
+
+
+
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 
-	public String getFrom_city() {
-		return from_city;
+
+
+
+
+
+
+	public String getFromCity() {
+		return fromCity;
 	}
 
 
@@ -166,8 +177,8 @@ public class Travel {
 
 
 
-	public void setFrom_city(String from_city) {
-		this.from_city = from_city;
+	public void setFromCity(String fromCity) {
+		this.fromCity = fromCity;
 	}
 
 
@@ -176,8 +187,8 @@ public class Travel {
 
 
 
-	public String getFrom_country() {
-		return from_country;
+	public String getFromCountry() {
+		return fromCountry;
 	}
 
 
@@ -186,8 +197,8 @@ public class Travel {
 
 
 
-	public void setFrom_country(String from_country) {
-		this.from_country = from_country;
+	public void setFromCountry(String fromCountry) {
+		this.fromCountry = fromCountry;
 	}
 
 
@@ -196,8 +207,8 @@ public class Travel {
 
 
 
-	public Date getArrival_date() {
-		return arrival_date;
+	public Date getArrivalDate() {
+		return arrivalDate;
 	}
 
 
@@ -206,8 +217,8 @@ public class Travel {
 
 
 
-	public void setArrival_date(Date arrival_date) {
-		this.arrival_date = arrival_date;
+	public void setArrivalDate(Date arrivalDate) {
+		this.arrivalDate = arrivalDate;
 	}
 
 
@@ -216,8 +227,8 @@ public class Travel {
 
 
 
-	public String getArrival_time() {
-		return arrival_time;
+	public String getArrivalTime() {
+		return arrivalTime;
 	}
 
 
@@ -226,8 +237,8 @@ public class Travel {
 
 
 
-	public void setArrival_time(String arrival_time) {
-		this.arrival_time = arrival_time;
+	public void setArrivalTime(String arrivalTime) {
+		this.arrivalTime = arrivalTime;
 	}
 
 
@@ -236,8 +247,8 @@ public class Travel {
 
 
 
-	public String getArrival_mode_of_transport() {
-		return arrival_mode_of_transport;
+	public String getArrivalModeOfTransport() {
+		return arrivalModeOfTransport;
 	}
 
 
@@ -246,8 +257,8 @@ public class Travel {
 
 
 
-	public void setArrival_mode_of_transport(String arrival_mode_of_transport) {
-		this.arrival_mode_of_transport = arrival_mode_of_transport;
+	public void setArrivalModeOfTransport(String arrivalModeOfTransport) {
+		this.arrivalModeOfTransport = arrivalModeOfTransport;
 	}
 
 
@@ -256,8 +267,8 @@ public class Travel {
 
 
 
-	public String getArrival_train_number() {
-		return arrival_train_number;
+	public String getArrivalTrainNumber() {
+		return arrivalTrainNumber;
 	}
 
 
@@ -266,8 +277,8 @@ public class Travel {
 
 
 
-	public void setArrival_train_number(String arrival_train_number) {
-		this.arrival_train_number = arrival_train_number;
+	public void setArrivalTrainNumber(String arrivalTrainNumber) {
+		this.arrivalTrainNumber = arrivalTrainNumber;
 	}
 
 
@@ -276,8 +287,8 @@ public class Travel {
 
 
 
-	public String getArrival_train_name() {
-		return arrival_train_name;
+	public String getArrivalTrainName() {
+		return arrivalTrainName;
 	}
 
 
@@ -286,8 +297,8 @@ public class Travel {
 
 
 
-	public void setArrival_train_name(String arrival_train_name) {
-		this.arrival_train_name = arrival_train_name;
+	public void setArrivalTrainName(String arrivalTrainName) {
+		this.arrivalTrainName = arrivalTrainName;
 	}
 
 
@@ -296,8 +307,8 @@ public class Travel {
 
 
 
-	public Date getDeparture_date() {
-		return departure_date;
+	public Date getDepartureDate() {
+		return departureDate;
 	}
 
 
@@ -306,8 +317,8 @@ public class Travel {
 
 
 
-	public void setDeparture_date(Date departure_date) {
-		this.departure_date = departure_date;
+	public void setDepartureDate(Date departureDate) {
+		this.departureDate = departureDate;
 	}
 
 
@@ -316,8 +327,8 @@ public class Travel {
 
 
 
-	public String getDeparture_time() {
-		return departure_time;
+	public String getDepartureTime() {
+		return departureTime;
 	}
 
 
@@ -326,8 +337,8 @@ public class Travel {
 
 
 
-	public void setDeparture_time(String departure_time) {
-		this.departure_time = departure_time;
+	public void setDepartureTime(String departureTime) {
+		this.departureTime = departureTime;
 	}
 
 
@@ -336,8 +347,8 @@ public class Travel {
 
 
 
-	public String getDeparture_mode_of_transport() {
-		return departure_mode_of_transport;
+	public String getDepartureModeOfTransport() {
+		return departureModeOfTransport;
 	}
 
 
@@ -346,8 +357,8 @@ public class Travel {
 
 
 
-	public void setDeparture_mode_of_transport(String departure_mode_of_transport) {
-		this.departure_mode_of_transport = departure_mode_of_transport;
+	public void setDepartureModeOfTransport(String departureModeOfTransport) {
+		this.departureModeOfTransport = departureModeOfTransport;
 	}
 
 
@@ -356,8 +367,8 @@ public class Travel {
 
 
 
-	public String getDeparture_train_number() {
-		return departure_train_number;
+	public String getDepartureTrainNumber() {
+		return departureTrainNumber;
 	}
 
 
@@ -366,8 +377,8 @@ public class Travel {
 
 
 
-	public void setDeparture_train_number(String departure_train_number) {
-		this.departure_train_number = departure_train_number;
+	public void setDepartureTrainNumber(String departureTrainNumber) {
+		this.departureTrainNumber = departureTrainNumber;
 	}
 
 
@@ -376,8 +387,8 @@ public class Travel {
 
 
 
-	public String getDeparture_train_name() {
-		return departure_train_name;
+	public String getDepartureTrainName() {
+		return departureTrainName;
 	}
 
 
@@ -386,8 +397,8 @@ public class Travel {
 
 
 
-	public void setDeparture_train_name(String departure_train_name) {
-		this.departure_train_name = departure_train_name;
+	public void setDepartureTrainName(String departureTrainName) {
+		this.departureTrainName = departureTrainName;
 	}
 
 
@@ -474,9 +485,5 @@ public class Travel {
 
 
 
-
-
-	
-	
 
 }
