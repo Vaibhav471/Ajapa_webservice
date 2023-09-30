@@ -530,4 +530,38 @@ public String sendEmail(Notification notification) {
 					urepo.save(u);
 					
 				}
+				
+				//--------------------------------------------------------------------------------------------------------------
+				@PostMapping("saveImage2")
+				public ResponseEntity<Object> saveImage2(@RequestParam("file") MultipartFile file, @RequestParam("email") String email) {
+
+					
+
+					// String imageName=new java.util.Date().toString()+".jpg";
+					String path = context.getRealPath("/") + "\\images";
+					File fl = new File(path);
+					if (!fl.exists()) {
+						fl.mkdir();
+					}
+					System.out.println("Image path " + path);
+					Path root = Paths.get(path + "\\" + email + ".jpg");
+
+					try {
+
+						if (Files.exists(root)) {
+							Files.delete(root); // Delete the existing image file
+						}
+
+						Files.copy(file.getInputStream(), root);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						System.out.print(e.getMessage());
+
+						message = e.getMessage();
+					}
+
+					Map<String, String> data = new HashMap();
+					data.put("message", message);
+					return new ResponseEntity<>(data, HttpStatus.OK);
+				}
 }

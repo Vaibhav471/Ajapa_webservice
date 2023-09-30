@@ -36,6 +36,7 @@ import com.eschool.beans.Notification;
 import com.eschool.beans.Travel;
 import com.eschool.beans.User;
 
+import jakarta.mail.Multipart;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContext;
@@ -47,6 +48,9 @@ public class EventController {
 	
 	@Autowired
 	EventRepository erepo;
+	
+	@Autowired
+	EventPermissionRepository eprepo;
 	
 	@Autowired
 	ServletContext context;
@@ -113,6 +117,7 @@ public int getEventIdByEmail(String email) {
 	
 	catch (Exception e) {
     e.printStackTrace();
+    System.out.println(e.getMessage());
 }			
 	return eventId;
 	
@@ -139,32 +144,29 @@ System.out.println("Error"+ex.getMessage());
 	
 	
 		@PostMapping("saveEvent")
-		
 		public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
 			
-			int event_id=0;
 			String message = "";
 			
 			try {
 		    Event e=erepo.save(event);
-		   event_id=e.getEventId();
 		    
+		   
 		    
 			message="event created successfully";
 			}
 			catch(Exception e) {
-				message=e.getMessage();		}
+				message=e.getMessage();		
+				}
 			
+			System.out.println(event.getListedBy());
 			int eventId=getEventIdByEmail(event.getListedBy());
 			
 			Map<String, String> data = new HashMap();
 	        data.put("token", message);
-	        data.put("eventId",""+event_id);
+	        data.put("eventId",""+eventId);
 	        return new ResponseEntity<>(data, HttpStatus.OK);
 	        
-	        
-	        
-			
 	        }
 		
 		
@@ -217,10 +219,13 @@ System.out.println("Error"+ex.getMessage());
 		//------------------------------TO SAVE EVENT RELATED DOCUMENTS-------------------------------------------------------------------------------------------------------------
 		
 		@PostMapping("saveEventD")
-		public ResponseEntity<Object> saveEventDocument(@RequestParam("file") Part file, @RequestParam("event_id") int event_id) {
+		public ResponseEntity<Object> saveEventDocument(@RequestParam("file") Part file, @RequestParam("eventId") int eventId) {
 			
 			String message="";
-			
+			System.out.println(eventId);
+
+			System.out.println(file);
+
 			
 			String path=context.getRealPath("/")+"\\EventDoc";
 			File fl=new File(path);
@@ -229,7 +234,7 @@ System.out.println("Error"+ex.getMessage());
 				fl.mkdir();
 			}
 			System.out.println("Image path "+path);
-			Path root=Paths.get(path+"\\"+event_id+".jpg");
+			Path root=Paths.get(path+"\\"+eventId+".jpg");
 			
 			
 			
@@ -247,7 +252,7 @@ System.out.println("Error"+ex.getMessage());
 			
 			catch (IOException e) {
 				// TODO Auto-generated catch block
-				System.out.print(e.getMessage());
+				System.out.print("Error 1"+e.getMessage());
 				
 				message=e.getMessage();
 			}

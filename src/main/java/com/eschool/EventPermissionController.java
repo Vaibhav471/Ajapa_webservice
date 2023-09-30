@@ -86,5 +86,36 @@ public class EventPermissionController {
 		return ewp;
 	}
 	
+//---------------------------------------------------------------------------------------------------------------
+	@GetMapping("getAllEventsWitPermissions")
+	public List<EventWithPermission> getAllEventsWitPermissions(){
+		
+		List<EventWithPermission> ewp=new ArrayList<>();
+		List<EventPermission> ep=eprepo.findAll();
+		
+		for(EventPermission e:ep) {
+			
+			Event ev=erepo.findById(e.getEventId());
+			EventWithPermission ee = new EventWithPermission();
+			ee.setEventId(ev.getEventId());
+			ee.setEventName(ev.getEventName());
+			ee.setEventType(ev.getEventType());
+			ee.setEventLocation(ev.getEventLocation());
+			ee.setListedBy(ev.getListedBy());
+			ee.setStartTime(ev.getStartTime());
+			ee.setEndTime(ev.getEndTime());
+			ee.setEventStatus(ev.getEventStatus());
+			ee.setStartDate(ev.getStartDate());
+			ee.setEndDate(ev.getEndDate());
+			ee.setLockArrivalDate(ev.getLockArrivalDate());
+			ee.setLockDepartureDate(ev.getLockDepartureDate());
+			ee.setCanDelete(e.getCanDelete());
+			ee.setCanModify(e.getCanModify());
+			
+			ewp.add(ee);
 
+			 
+		}
+		
+		return ewp;	}
 }

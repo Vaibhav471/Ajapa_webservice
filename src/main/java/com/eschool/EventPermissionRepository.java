@@ -11,5 +11,8 @@ public interface EventPermissionRepository extends CrudRepository<EventPermissio
 	List<EventPermission> findByAdminId(String adminId);
 	
 	EventPermission findByAdminIdAndEventId(String adminId, int eventId);
+	
+	List<EventPermission> findAll();
+
 
 }
