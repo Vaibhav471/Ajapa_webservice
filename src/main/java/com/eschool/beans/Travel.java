@@ -16,16 +16,10 @@ import jakarta.persistence.Table;
 public class Travel {
 
     @Id
-    private int travel_id;
+    private int travelId;
 
-   // @ManyToOne
-    //@JoinTable(name="event",joinColumns={@JoinColumn(name="event_id")})
     private int eventId;
     
-    
-
-   //@ManyToOne
-   //@JoinTable(name="user",joinColumns={@JoinColumn(name="id")})
     private int userId;
 
     private String fromCity;
@@ -76,11 +70,11 @@ public class Travel {
 
 
 
-	public Travel(int travel_id, int eventId, int userId, String fromCity, String fromCountry, Date arrivalDate,
+	public Travel(int travelId, int eventId, int userId, String fromCity, String fromCountry, Date arrivalDate,
 			String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber, String arrivalTrainName,
 			Date departureDate, String departureTime, String departureModeOfTransport, String departureTrainNumber,
 			String departureTrainName, String description, Date lockArrivalDate, Date lockDepartureDate, int familyId) {
-		this.travel_id = travel_id;
+		this.travelId = travelId;
 		this.eventId = eventId;
 		this.userId = userId;
 		this.fromCity = fromCity;
@@ -107,8 +101,8 @@ public class Travel {
 
 
 
-	public int getTravel_id() {
-		return travel_id;
+	public int getTravelId() {
+		return travelId;
 	}
 
 
@@ -117,8 +111,8 @@ public class Travel {
 
 
 
-	public void setTravel_id(int travel_id) {
-		this.travel_id = travel_id;
+	public void setTravelId(int travelId) {
+		this.travelId = travelId;
 	}
 
 

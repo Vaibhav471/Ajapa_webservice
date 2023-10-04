@@ -1,15 +1,11 @@
 package com.eschool;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.eschool.beans.Event;
 import com.eschool.beans.EventPermission;
 import com.eschool.beans.EventWithPermission;
@@ -53,7 +49,7 @@ public class EventPermissionController {
 	@GetMapping("getEventWithPermissions/{adminId}")
 	public List<EventWithPermission> getEventWithPermission(@PathVariable String adminId){
 		
-		List<EventWithPermission> ewp=new ArrayList<>();
+		ArrayList<EventWithPermission> ewp=new ArrayList<EventWithPermission>();
 		List<EventPermission> ep=eprepo.findByAdminId(adminId);
 		
 		for(EventPermission e:ep) {
@@ -75,12 +71,7 @@ public class EventPermissionController {
 			ee.setCanDelete(e.getCanDelete());
 			ee.setCanModify(e.getCanModify());
 			
-			ewp.add(ee);
-
-
-
-
-			 
+			ewp.add(ee);			 
 		}
 		
 		return ewp;
@@ -90,7 +81,7 @@ public class EventPermissionController {
 	@GetMapping("getAllEventsWitPermissions")
 	public List<EventWithPermission> getAllEventsWitPermissions(){
 		
-		List<EventWithPermission> ewp=new ArrayList<>();
+		ArrayList<EventWithPermission> ewp=new java.util.ArrayList<>();
 		List<EventPermission> ep=eprepo.findAll();
 		
 		for(EventPermission e:ep) {

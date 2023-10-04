@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -80,6 +81,15 @@ public String sendEmail(Notification notification) {
 		
 		try {
 			
+			if(urepo.findByEmail(user.getEmail())!=null) {
+				message="User exists";
+			}
+			else if(urepo.findByMobileNum(user.getMobileNum())!=null) {
+				message="User exists";
+
+			}
+			
+			else {
 			urepo.save(user);
 			int id1 = urepo.findIdByEmail(user.getEmail());
 			System.out.println(id1);
@@ -87,6 +97,7 @@ public String sendEmail(Notification notification) {
 			u.setFamilyId(id1);
 			urepo.save(u);
 			message = "Data saved successfully";
+			}
 			
 			
 			
@@ -130,13 +141,16 @@ public String sendEmail(Notification notification) {
 		
 		
 		try {
-			
+			if(urepo.findByEmail(user.getEmail())!=null) {
+				message="User exists";
+			}
+			else {
 			user.setFamilyId(id);
 			
 			urepo.save(user);
 			message = "Data saved successfully";
 			
-			
+			}
 			
 		} catch (Exception e) {
 			message = e.getMessage();
@@ -469,8 +483,14 @@ public String sendEmail(Notification notification) {
 				@GetMapping("getFamilyMembers/{family_id}")
 				public List<User> getFamilyMembers(@PathVariable int family_id) {
 					
-					return urepo.findUsersByFamilyId(family_id);
-					
+					List<User> u=urepo.findUsersByFamilyId(family_id);
+					List<User> uu=new ArrayList<>();
+					for(User u1:u) {
+						if(u1.getStatus()==1) {
+							uu.add(u1);
+						}
+					}
+					return uu;
 				}
 				
 	//----------------------------------------------------------------------------------------------------------------------------------			
@@ -521,7 +541,7 @@ public String sendEmail(Notification notification) {
 					return urepo.findByIsAdminTrue();
 				}
 	//-----------------------------------------------------------------------------------------------------------------------------------------------
-				@PostMapping("changeAdminStatus/{id}")
+				/*@PostMapping("changeAdminStatus/{id}")
 				public void changeAdminStatus(@PathVariable int id) {
 					
 					User u=urepo.findById(id);
@@ -529,7 +549,7 @@ public String sendEmail(Notification notification) {
 					
 					urepo.save(u);
 					
-				}
+				}*/
 				
 				//--------------------------------------------------------------------------------------------------------------
 				@PostMapping("saveImage2")
@@ -562,6 +582,57 @@ public String sendEmail(Notification notification) {
 
 					Map<String, String> data = new HashMap();
 					data.put("message", message);
+					return new ResponseEntity<>(data, HttpStatus.OK);
+				}
+				
+				
+				//--------------------------------------------------------------------------------------------------------------------------------------
+				@PostMapping("changeStatusRestore/{email}")
+				public ResponseEntity<Object> changeStatusRestore(@PathVariable String email) {
+
+					String message = "";
+
+					User existingUser = urepo.findByEmail(email);
+
+					if (existingUser != null) {
+
+						existingUser.setStatus(0);
+						urepo.save(existingUser);
+						message="User Approved";
+					}
+					Map<String, String> data = new HashMap();
+					data.put("token", message);
+					return new ResponseEntity<>(data, HttpStatus.OK);
+				}
+				//------------------------------------------------------------------------------------------------------------------------
+				@GetMapping("getAge/{id}")
+				public String getAge(@PathVariable int id) {
+					String message="";
+					User u=urepo.findById(id);
+					
+					if(u.getAge()==0) {
+						message="no";
+					}else {
+						message="yes";
+					}
+					return message;
+				}
+				//----------------------------------------------------------------------------------------------------------------------------------
+				@PostMapping("deleteUser/{email}")
+				public ResponseEntity<Object> deleteUser(@PathVariable String email) {
+
+					String message = "";
+
+					User existingUser = urepo.findByEmail(email);
+
+					if (existingUser != null) {
+
+						existingUser.setStatus(2);
+						urepo.save(existingUser);
+						message="deleted";
+					}
+					Map<String, String> data = new HashMap();
+					data.put("token", message);
 					return new ResponseEntity<>(data, HttpStatus.OK);
 				}
 }

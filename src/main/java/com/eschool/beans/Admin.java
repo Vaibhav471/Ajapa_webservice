@@ -11,16 +11,10 @@ public class Admin {
 	@Id
 	String identifier;
 	String password;
+	int status=1;
 	
 	
-	public Admin(String identifier, String password) {
-		super();
-		this.identifier = identifier;
-		this.password = password;
-	}
-
 	
-
 	public String getIdentifier() {
 		return identifier;
 	}
@@ -41,6 +35,26 @@ public class Admin {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+
+
+	public int getStatus() {
+		return status;
+	}
+
+
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+
+
+	public Admin(String identifier, String password, int status) {
+		this.identifier = identifier;
+		this.password = password;
+		this.status = status;
 	}
 
 
