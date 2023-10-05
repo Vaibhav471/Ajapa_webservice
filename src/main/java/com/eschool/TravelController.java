@@ -214,7 +214,7 @@ List<TravelEventUser> t1=new ArrayList();
 		return message;
 	}
 	//---------------------------------------------------------------------------------------------------------------------------
-	@GetMapping("/generatePdf")
+	@GetMapping("generatePdf")
     public void generatePdf(@RequestParam String outputPath) {
         List<Travel> travelData = trepo.findAll();
 
@@ -248,18 +248,44 @@ List<TravelEventUser> t1=new ArrayList();
             Row headerRow = sheet.createRow(0);
 
             // Create header cells
-            headerRow.createCell(0).setCellValue("User ID");
-            headerRow.createCell(1).setCellValue("From City");
-            headerRow.createCell(2).setCellValue("From Country");
-            // Add more headers for other attributes...
+            headerRow.createCell(0).setCellValue("ID");
+            headerRow.createCell(1).setCellValue("EventId");
+            headerRow.createCell(2).setCellValue("UserId");
+            headerRow.createCell(3).setCellValue("from city");
+            headerRow.createCell(4).setCellValue("from country");
+            headerRow.createCell(5).setCellValue("arrival date");
+            headerRow.createCell(6).setCellValue("arrival mode of transport");
+            headerRow.createCell(7).setCellValue("arrival train number");
+            headerRow.createCell(8).setCellValue("arrival train name");
+            headerRow.createCell(9).setCellValue("departure date");
+            headerRow.createCell(10).setCellValue("departure time");
+            headerRow.createCell(11).setCellValue("departure mode of transport");
+            headerRow.createCell(12).setCellValue("departure train number");
+            headerRow.createCell(13).setCellValue("departure train name");
+            headerRow.createCell(14).setCellValue("description");
+            headerRow.createCell(15).setCellValue("FamilyId");
+
 
             int rowNum = 1;
             for (Travel item : travelData) {
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(item.getUserId());
-                row.createCell(1).setCellValue(item.getFromCity());
-                row.createCell(2).setCellValue(item.getFromCountry());
-                // Add more cells for other attributes...
+                row.createCell(0).setCellValue(item.getTravelId());
+                row.createCell(1).setCellValue(item.getEventId());
+                row.createCell(2).setCellValue(item.getUserId());
+                row.createCell(3).setCellValue(item.getFromCity());
+                row.createCell(4).setCellValue(item.getFromCountry());
+                row.createCell(5).setCellValue(item.getArrivalDate());
+                row.createCell(6).setCellValue(item.getArrivalTime());
+                row.createCell(7).setCellValue(item.getArrivalModeOfTransport());
+                row.createCell(8).setCellValue(item.getArrivalTrainNumber());
+                row.createCell(9).setCellValue(item.getArrivalTrainName());
+                row.createCell(10).setCellValue(item.getDepartureDate());
+                row.createCell(11).setCellValue(item.getDepartureTime());
+                row.createCell(12).setCellValue(item.getDepartureModeOfTransport());
+                row.createCell(13).setCellValue(item.getDepartureTrainNumber());
+                row.createCell(14).setCellValue(item.getDepartureTrainName());
+                row.createCell(15).setCellValue(item.getDescription());
+
             }
 
             try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
@@ -272,17 +298,8 @@ List<TravelEventUser> t1=new ArrayList();
         }
     }
 
-    // Simulated travel data for demonstration
-    private List<Travel> getTravelData() {
-        // Replace this with your actual data retrieval logic
-        // You can fetch data from a database or any other source
-        // and return it as a list of TravelItem objects
-        return List.of(
-          //   new Travel()
-           // new TravelItem(),
-            //new TravelItem(3, "Paris", "France")
-        );
+   
     }
 	
 
-}
+
