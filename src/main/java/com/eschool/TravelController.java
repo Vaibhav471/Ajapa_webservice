@@ -239,7 +239,7 @@ List<TravelEventUser> t1=new ArrayList();
         }
     }
 	//-------------------------------------------------------------------------------------------------------------
-	@GetMapping("/generateExcel")
+	@GetMapping("generateExcel")
     public void generateExcel(@RequestParam String outputPath) {
         List<Travel> travelData = trepo.findAll(); // Retrieve travel data from your data source
 
@@ -298,7 +298,11 @@ List<TravelEventUser> t1=new ArrayList();
         }
     }
 
-   
+	@GetMapping("getTravelByEventId/{id}")
+	public List<Travel>  getTravelByEventId(@PathVariable int id){
+		
+		return trepo.findAllByEventId(id);
+	}
     }
 	
 

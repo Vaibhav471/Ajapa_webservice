@@ -109,6 +109,7 @@ public class NotificationController {
     	System.out.println(pno);
     	System.out.println(otp);
     	
+    	try {
     	int otp1= otpsService.getLatestOTPByPno(pno);
     	
     	
@@ -149,6 +150,10 @@ public class NotificationController {
     	
     	
     
+    	}
+    	}
+    	catch(Exception e) {
+    		token_message="No user found";
     	}
 		
     
