@@ -50,7 +50,6 @@ public class UserController {
 	private final UserService userService;
 	@Autowired
     private NotificationService emailService;
-
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
@@ -137,8 +136,7 @@ public String sendEmail(Notification notification) {
 				e.printStackTrace();
 				System.out.println("Failed to decode JWT: " + e.getMessage());
 			}
-		}
-		
+		}		
 		
 		try {
 			if(urepo.findByEmail(user.getEmail())!=null) {

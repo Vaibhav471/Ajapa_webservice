@@ -11,20 +11,12 @@ import com.eschool.beans.User;
 
 public interface EventRepository extends CrudRepository<Event, Integer> {
 	
-	Event  findById(int id);
-	
-	long count();
-	
-	List<Event> findAllByStartDateGreaterThan(Date date);
-	
+	Event  findById(int id);	
+	long count();	
+	List<Event> findAllByStartDateGreaterThan(Date date);	
 	List<Event> findAll();
-	
-
-
 	List<Event> findAllByOrderByStartDateDesc();
-	
-
-
 	@Query("SELECT u.eventName FROM Event u WHERE u.eventId = :id")
     String findEventNameByUserId(int id);
+	
 }

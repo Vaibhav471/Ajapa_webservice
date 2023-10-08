@@ -47,8 +47,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.Part;
 
 @RestController
-public class EventController {
-	
+public class EventController {	
 	
 	@Autowired
 	EventRepository erepo;
@@ -362,8 +361,7 @@ System.out.println("Error"+ex.getMessage());
 	    
 	    //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    @GetMapping("getAllEvents")
-	    public List<Event> getAllEvents(){
-	    	
+	    public List<Event> getAllEvents(){	    	
 	    	return erepo.findAll();
 	    }
 	    

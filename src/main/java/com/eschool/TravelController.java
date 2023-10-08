@@ -3,7 +3,13 @@ package com.eschool;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +35,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.service.annotation.PutExchange;
 
+import com.eschool.beans.Event;
+import com.eschool.beans.HeadWiseReportData;
 import com.eschool.beans.Travel;
+import com.eschool.beans.TravelDateWiseReportData;
 import com.eschool.beans.TravelEventUser;
+import com.eschool.beans.User;
 
 @RestController
-public class TravelController {
-	
+public class TravelController {	
 	@Autowired
     TravelRepository trepo;
 	@Autowired
@@ -42,7 +51,6 @@ public class TravelController {
 	@Autowired
 	EventRepository erepo;
 	private final TravelService travelService;
-
     @Autowired
     public TravelController(TravelService travelService) {
         this.travelService = travelService;
@@ -67,23 +75,236 @@ public class TravelController {
 	}
 	//-------------------------------GET ALL TRAVEL OBJECTS FROM DB--------------------------------------------------------------------
 	@GetMapping("getAllTravels")
-	public List<Travel> getAllTravels(){
-		
+	public List<Travel> getAllTravels(){		
 		return trepo.findAll();
 	}
 	
 	@GetMapping("getTravelById/{id}")
-	Travel getTravelById(@PathVariable int id) {
-		
+	Travel getTravelById(@PathVariable int id) {		
 		return trepo.findById(id);
 	}
+	
+	@GetMapping("getTravelReportDateWise/{eventId}")
+	List<TravelDateWiseReportData> getTravelReportDateWiseByEventId(@PathVariable int eventId) {	
+	List<TravelDateWiseReportData> data=new ArrayList<>();
+	String query1="select distinct arrival_date from travel where event_id=? order by arrival_date";
+	Connection cn=null;
+	try
+	{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		cn=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		PreparedStatement ps1=cn.prepareStatement(query1);
+		ps1.setInt(1, eventId);
+		ResultSet rs1=ps1.executeQuery();
+		while(rs1.next())
+		{
+			java.sql.Date arrival_date=rs1.getDate(1);
+			String query2="select count(*),count(distinct travel.family_id),COUNT(IF(TIMESTAMPDIFF(year,dob,now())>45, 1, NULL)),COUNT(IF(TIMESTAMPDIFF(year,dob,now())<10, 1, NULL)),COUNT(IF(gender='Male', 1, NULL)),COUNT(IF(gender='Female', 1, NULL)) from travel,user where user.id=travel.user_id and event_id=? and arrival_date=?";
+			//String query2="select count(*),count(distinct travel.family_id),COUNT(IF(TIMESTAMPDIFF(year,dob,now())>45, 1, NULL)),COUNT(IF(TIMESTAMPDIFF(year,dob,now())<10, 1, NULL)),COUNT(IF(gender='Male', 1, NULL)),COUNT(IF(gender='Female', 1, NULL)) from travel,user where user.id=travel.user_id and event_id=?";
+			PreparedStatement ps2=cn.prepareStatement(query2);
+			ps2.setInt(1, eventId);			
+			ps2.setDate(2,arrival_date);			
+			ResultSet rs2=ps2.executeQuery();
+			rs2.next();
+			int totalPerson=rs2.getInt(1);			
+			int totalFamilies=rs2.getInt(2);
+			int totalSeniors=rs2.getInt(3);			
+			int totalKids=rs2.getInt(4);
+			int totalMale=rs2.getInt(5);			
+			int totalFemale=rs2.getInt(6);	
+			TravelDateWiseReportData record=new TravelDateWiseReportData(arrival_date.toString(), totalPerson, totalFamilies, totalSeniors, totalKids, totalMale, totalFemale);
+			data.add(record);
+		}
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getMessage());
+	}
+	finally {
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		return data;
+	}
+	
+	@GetMapping("getTravelReportFamilyWise/{eventId}")
+	List<HeadWiseReportData> getTravelReportFamilyWiseByEventId(@PathVariable int eventId) {	
+	List<HeadWiseReportData> data=new ArrayList<>();
+	String query1="select distinct family_Id from travel where event_id=?";
+	Connection cn=null;
+	try
+	{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		cn=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		PreparedStatement ps1=cn.prepareStatement(query1);
+		ps1.setInt(1, eventId);
+		ResultSet rs1=ps1.executeQuery();
+		while(rs1.next())
+		{
+			HeadWiseReportData record=new HeadWiseReportData();			
+			int familyId=rs1.getInt(1);
+			String query2="select count(*),COUNT(IF(TIMESTAMPDIFF(year,dob,now())>45, 1, NULL)),COUNT(IF(TIMESTAMPDIFF(year,dob,now())<10, 1, NULL)),COUNT(IF(gender='Male', 1, NULL)),COUNT(IF(gender='Female', 1, NULL)) from travel,user where user.id=travel.user_id and event_id=? and travel.family_id=?";
+			PreparedStatement ps2=cn.prepareStatement(query2);
+			ps2.setInt(1, eventId);			
+			ps2.setInt(2,familyId);			
+			ResultSet rs2=ps2.executeQuery();
+			rs2.next();
+			int totalPerson=rs2.getInt(1);			
+			int totalSeniors=rs2.getInt(2);			
+			int totalKids=rs2.getInt(3);
+			int totalMale=rs2.getInt(4);			
+			int totalFemale=rs2.getInt(5);	
+			String query3="select id,email,full_name from user where family_id=? and user_type='head'";
+			PreparedStatement ps3=cn.prepareStatement(query3);
+			ps3.setInt(1, familyId);			
+			ResultSet rs3=ps3.executeQuery();
+			rs3.next();
+			int id=rs3.getInt(1);
+			String email=rs3.getString(2);
+			String fullName=rs3.getString(3);
+			String query4="select u.full_name,u.city,t.arrival_date,t.arrival_mode_of_transport,t.arrival_train_number,t.arrival_train_name,t.departure_date,t.departure_mode_of_transport,t.departure_train_number,t.departure_train_name from travel t,user u where t.user_id=u.id and t.family_id=? and t.event_id=?";
+			PreparedStatement ps4=cn.prepareStatement(query4);
+			ps4.setInt(1,familyId);	
+			ps4.setInt(2, eventId);			
+					
+			ResultSet rs4=ps4.executeQuery();
+		while(rs4.next())
+		{
+			String memberName=rs4.getString(1);
+			String reachingCity=rs4.getString(2);
+			java.sql.Date reachingDate=rs4.getDate(3);
+			String reachingMode=rs4.getString(4);
+			String reachingTrainDetails=rs4.getString(5)+":"+rs4.getString(6);
+			java.sql.Date leavingDate=rs4.getDate(7);
+			String leavingMode=rs4.getString(8);
+			String leavingTrainDetails=rs4.getString(9)+":"+rs4.getString(10);
+			record.getMemberNames().add(memberName);
+			record.getReachingCity().add(reachingCity);
+			record.getReachingDate().add(reachingDate);
+			record.getReachingMode().add(reachingMode);
+			record.getReachingTrainDetails().add(reachingTrainDetails);			
+			record.getLeavingDate().add(leavingDate);
+			record.getLeavingMode().add(leavingMode);
+			record.getLeavingTrainDetails().add(leavingTrainDetails);
+			
+			
+			
+		}
+		record.setHeadName(fullName);
+		record.setEmailId(email);
+		record.setTotalKids(totalKids);
+		record.setTotalFemaleMembers(totalFemale);
+		record.setTotalMaleMembers(totalMale);
+		record.setTotalPersons(totalPerson);
+		record.setTotalSeniorCitizens(totalSeniors);
+		
+		data.add(record);
+		}
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getMessage());
+	}
+	finally {
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		return data;
+	}
+	
+	
+	
+	
+	
+	@GetMapping("getTravelReportDateWise/{eventId}/{isDesc}")
+	List<TravelDateWiseReportData> getTravelReportDateWiseByEventId(@PathVariable int eventId,@PathVariable int isDesc) {	
+	List<TravelDateWiseReportData> data=new ArrayList<>();
+	String query1="select distinct departure_date from travel where event_id=? order by departure_date";
+	Connection cn=null;
+	try
+	{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		cn=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		PreparedStatement ps1=cn.prepareStatement(query1);
+		ps1.setInt(1, eventId);
+		ResultSet rs1=ps1.executeQuery();
+		while(rs1.next())
+		{
+			java.sql.Date departure_date=rs1.getDate(1);
+			String query2="select count(*),count(distinct travel.family_id),COUNT(IF(TIMESTAMPDIFF(year,dob,now())>45, 1, NULL)),COUNT(IF(TIMESTAMPDIFF(year,dob,now())<10, 1, NULL)),COUNT(IF(gender='Male', 1, NULL)),COUNT(IF(gender='Female', 1, NULL)) from travel,user where user.id=travel.user_id and event_id=? and departure_date=?";
+			//String query2="select count(*),count(distinct travel.family_id),COUNT(IF(TIMESTAMPDIFF(year,dob,now())>45, 1, NULL)),COUNT(IF(TIMESTAMPDIFF(year,dob,now())<10, 1, NULL)),COUNT(IF(gender='Male', 1, NULL)),COUNT(IF(gender='Female', 1, NULL)) from travel,user where user.id=travel.user_id and event_id=?";
+			PreparedStatement ps2=cn.prepareStatement(query2);
+			ps2.setInt(1, eventId);			
+			ps2.setDate(2,departure_date);			
+			ResultSet rs2=ps2.executeQuery();
+			rs2.next();
+			int totalPerson=rs2.getInt(1);			
+			int totalFamilies=rs2.getInt(2);
+			int totalSeniors=rs2.getInt(3);			
+			int totalKids=rs2.getInt(4);
+			int totalMale=rs2.getInt(5);			
+			int totalFemale=rs2.getInt(6);	
+			TravelDateWiseReportData record=new TravelDateWiseReportData(departure_date.toString(), totalPerson, totalFamilies, totalSeniors, totalKids, totalMale, totalFemale);
+			data.add(record);
+		}
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getMessage());
+	}
+	finally {
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		return data;
+	}
+	
 	
 	@GetMapping("getTravelByUserId/{id}")
 	public List<TravelEventUser> getTravelByUserId(@PathVariable int id) {
 		
 		List<Travel> t= trepo.findAllByUserId(id);
-List<TravelEventUser> t1=new ArrayList();
+List<TravelEventUser> t1=new ArrayList<>();
 		
+		for(Travel tt:t) {
+			TravelEventUser teu=new TravelEventUser();
+			teu.setTravelId(tt.getTravelId());
+			teu.setEventId(tt.getEventId());
+			teu.setUserId(tt.getUserId());
+			teu.setFromCity(tt.getFromCity());
+			teu.setFromCountry(tt.getFromCountry());
+			teu.setArrivalDate(tt.getArrivalDate());
+			teu.setArrivalTime(tt.getArrivalTime());
+			teu.setArrivalModeOfTransport(tt.getArrivalModeOfTransport());
+			teu.setArrivalTrainNumber(tt.getArrivalTrainNumber());
+			teu.setArrivalTrainName(tt.getArrivalTrainName());
+			teu.setDepartureDate(tt.getDepartureDate());
+			teu.setDepartureTime(tt.getDepartureTime());
+			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
+			teu.setDepartureTrainName(tt.getDepartureTrainName());
+			teu.setDescription(tt.getDescription());
+			teu.setUserName(urepo.findUserNameByUserId(tt.getUserId()));
+			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
+			t1.add(teu);
+		}		
+		return t1;	
+	}	
+	@GetMapping("getAllTravel1")
+	public List<TravelEventUser> getAllTravel1() {		
+		List<Travel> t= trepo.findAll();
+		List<TravelEventUser> t1=new ArrayList<>();		
 		for(Travel tt:t) {
 			TravelEventUser teu=new TravelEventUser();
 			teu.setTravelId(tt.getTravelId());
@@ -105,26 +326,24 @@ List<TravelEventUser> t1=new ArrayList();
 			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
 
 			t1.add(teu);
-
 		}
 		
 		return t1;
-		
 		
 	}
 	
-	@GetMapping("getAllTravel1")
-	public List<TravelEventUser> getAllTravel1() {
-		
-		List<Travel> t= trepo.findAll();
-		List<TravelEventUser> t1=new ArrayList();
-		
-		for(Travel tt:t) {
+	@GetMapping("getAllTravelEventUser/{id}")
+	public List<TravelEventUser> getAllTravelEventUser(@PathVariable int id) {
+		System.out.println("Hell0");
+		List<Travel> t= trepo.findAllByEventId(id);		
+		List<TravelEventUser> t1=new ArrayList<>();		
+		for(Travel tt:t) {			
 			TravelEventUser teu=new TravelEventUser();
 			teu.setTravelId(tt.getTravelId());
 			teu.setEventId(tt.getEventId());
 			teu.setUserId(tt.getUserId());
-			teu.setFromCity(tt.getFromCity());
+			teu.setFromState(tt.getFromState());
+			teu.setFromCity(tt.getFromCity());			
 			teu.setFromCountry(tt.getFromCountry());
 			teu.setArrivalDate(tt.getArrivalDate());
 			teu.setArrivalTime(tt.getArrivalTime());
@@ -135,10 +354,11 @@ List<TravelEventUser> t1=new ArrayList();
 			teu.setDepartureTime(tt.getDepartureTime());
 			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
-			teu.setDescription(tt.getDescription());
-			teu.setUserName(urepo.findUserNameByUserId(tt.getUserId()));
-			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
-
+			teu.setDescription(tt.getDescription());			
+			User user=urepo.findById(tt.getUserId());
+			teu.setUserName(user.getFullName());
+			Event event=erepo.findById(tt.getEventId());
+			teu.setEventName(event.getEventName());
 			t1.add(teu);
 
 		}
@@ -146,13 +366,47 @@ List<TravelEventUser> t1=new ArrayList();
 		return t1;
 		
 	}
+	@GetMapping("getAllTravelEventUser/{eventId}/{familyId}")
+	public List<TravelEventUser> getAllTravelEventUserByEventIdFamilyId(@PathVariable int eventId,@PathVariable int familyId ) {
+		System.out.println("Hell0");
+		List<Travel> t= trepo.findAllByEventIdAndFamilyId(eventId,familyId);		
+		List<TravelEventUser> t1=new ArrayList<>();		
+		for(Travel tt:t) {			
+			TravelEventUser teu=new TravelEventUser();
+			teu.setTravelId(tt.getTravelId());
+			teu.setEventId(tt.getEventId());
+			teu.setUserId(tt.getUserId());
+			teu.setFromCity(tt.getFromCity());
+			teu.setFromState(tt.getFromState());
+     		teu.setFromCountry(tt.getFromCountry());
+			teu.setArrivalDate(tt.getArrivalDate());
+			teu.setArrivalTime(tt.getArrivalTime());
+			teu.setArrivalModeOfTransport(tt.getArrivalModeOfTransport());
+			teu.setArrivalTrainNumber(tt.getArrivalTrainNumber());
+			teu.setArrivalTrainName(tt.getArrivalTrainName());
+			teu.setDepartureDate(tt.getDepartureDate());
+			teu.setDepartureTime(tt.getDepartureTime());
+			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
+			teu.setDepartureTrainName(tt.getDepartureTrainName());
+			teu.setDescription(tt.getDescription());
+			
+			User user=urepo.findById(tt.getUserId());
+			teu.setUserName(user.getFullName());
+			Event event=erepo.findById(tt.getEventId());
+			teu.setEventName(event.getEventName());
+			t1.add(teu);
+
+		}
+		
+		return t1;
+		
+	}
+
 	
 	//-------------------------------------------------------------------------------------------------------------------
 	
 	@GetMapping("getTravelByEventAndTravel/{eventId}/{familyId}")
-	public List<Travel> getTravelByEventAndTravel(@PathVariable int eventId, @PathVariable int familyId){
-		
-		
+	public List<Travel> getTravelByEventAndTravel(@PathVariable int eventId, @PathVariable int familyId){	
 		return trepo.findAllByEventIdAndFamilyId(eventId, familyId);
 	}
 	
