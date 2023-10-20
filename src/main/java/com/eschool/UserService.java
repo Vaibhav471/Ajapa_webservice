@@ -51,7 +51,9 @@ public class UserService {
     public User getUserByEmailOrMobileNumberAndPassword(String identifier, String password) {
         return userRepository.findByEmailOrMobileNumberAndPassword(identifier, password);
     }
-    
+    public User getUserByEmailOrMobileNumber(String identifier) {
+        return userRepository.findByEmailOrMobileNumber(identifier);
+    }
    
     
 }

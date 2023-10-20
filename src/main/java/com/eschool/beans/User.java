@@ -1,48 +1,29 @@
 package com.eschool.beans;
-
-
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-
 @Entity
 @Table(name="user")
-public class User {
-	
+public class User {	
 	@Id
-	int id;
-	
+	int id;	
 	@Email(message="Enter a valid Email address")
-	String email;
-	
-	String fullName;
-	
-	String dob;
-	
-	String mobileNum;
-	
-	String password;
-	
+	String email;	
+	String fullName;	
+	String dob;	
+	String mobileNum;	
+	String password;	
 	String gender, bloodGrp, occupation, qualification, addressLinep,addressLines, country, state, city, dikshaDt;
     int age;
     String whatsappNum;
     double pincode;
-    int status;
-    
-    String userType="member";
-    
-    int familyId;
-    
-    String identifier;
-    
+    int status;    
+    String userType="member";    
+    int familyId;    
+    String identifier;    
     boolean isAdmin;
-
-	
-
 	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName, String dob,
 			String mobileNum, String password, String gender, String bloodGrp, String occupation, String qualification,
 			String addressLinep, String addressLines, String country, String state, String city, String dikshaDt,

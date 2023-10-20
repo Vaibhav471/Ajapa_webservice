@@ -16,7 +16,30 @@ public class Event {
 	private int eventId;
 	private String eventName,eventType,eventLocation,listedBy,startTime,endTime;
 	private int eventStatus=1;
-	private Blob other;
+public Event(int eventId, String eventName, String eventType, String eventLocation, String listedBy,
+			String startTime, String endTime, int eventStatus, Date startDate, Date endDate, Date lockArrivalDate,
+			Date lockDepartureDate) {
+		super();
+		this.eventId = eventId;
+		this.eventName = eventName;
+		this.eventType = eventType;
+		this.eventLocation = eventLocation;
+		this.listedBy = listedBy;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.eventStatus = eventStatus;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.lockArrivalDate = lockArrivalDate;
+		this.lockDepartureDate = lockDepartureDate;
+	}
+
+
+
+
+
+
+//	private Blob other;
 	Date startDate;
 	Date endDate;
 	 private Date lockArrivalDate;
@@ -30,29 +53,6 @@ public class Event {
 	
 	public Event() {
 		
-	}
-
-
-
-
-
-
-	public Event(int eventId, String eventName, String eventType, String eventLocation, String listedBy,
-			String startTime, String endTime, int eventStatus, Blob other, Date startDate, Date endDate,
-			Date lockArrivalDate, Date lockDepartureDate) {
-		this.eventId = eventId;
-		this.eventName = eventName;
-		this.eventType = eventType;
-		this.eventLocation = eventLocation;
-		this.listedBy = listedBy;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.eventStatus = eventStatus;
-		this.other = other;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.lockArrivalDate = lockArrivalDate;
-		this.lockDepartureDate = lockDepartureDate;
 	}
 
 
@@ -204,24 +204,6 @@ public class Event {
 
 
 
-	public Blob getOther() {
-		return other;
-	}
-
-
-
-
-
-
-	public void setOther(Blob other) {
-		this.other = other;
-	}
-
-
-
-
-
-
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -288,7 +270,6 @@ public class Event {
 	public void setLockDepartureDate(Date lockDepartureDate) {
 		this.lockDepartureDate = lockDepartureDate;
 	}
-
 
 
 

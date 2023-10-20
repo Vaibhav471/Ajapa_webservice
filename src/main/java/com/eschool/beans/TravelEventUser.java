@@ -19,13 +19,8 @@ public class TravelEventUser {
 	String departureTime;
 	String departureModeOfTransport;
 	String departureTrainName;
+	String departureTrainNumber;
 	String description;
-	String userName;
-	String eventName;
-
-	public TravelEventUser() {
-	}
-
 	public int getTravelId() {
 		return travelId;
 	}
@@ -146,6 +141,14 @@ public class TravelEventUser {
 		this.departureTrainName = departureTrainName;
 	}
 
+	public String getDepartureTrainNumber() {
+		return departureTrainNumber;
+	}
+
+	public void setDepartureTrainNumber(String departureTrainNumber) {
+		this.departureTrainNumber = departureTrainNumber;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -170,10 +173,17 @@ public class TravelEventUser {
 		this.eventName = eventName;
 	}
 
+	String userName;
+	String eventName;
+
+	public TravelEventUser() {
+	}
+
 	public TravelEventUser(int travelId, int eventId, int userId, String fromCity, String fromState, String fromCountry,
 			Date arrivalDate, String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber,
 			String arrivalTrainName, Date departureDate, String departureTime, String departureModeOfTransport,
-			String departureTrainName, String description, String userName, String eventName) {
+			String departureTrainName, String departureTrainNumber, String description, String userName,
+			String eventName) {
 		super();
 		this.travelId = travelId;
 		this.eventId = eventId;
@@ -190,9 +200,11 @@ public class TravelEventUser {
 		this.departureTime = departureTime;
 		this.departureModeOfTransport = departureModeOfTransport;
 		this.departureTrainName = departureTrainName;
+		this.departureTrainNumber = departureTrainNumber;
 		this.description = description;
 		this.userName = userName;
 		this.eventName = eventName;
 	}
+
 		
 }

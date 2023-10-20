@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.LogRecord;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -39,6 +40,7 @@ import com.eschool.beans.Event;
 import com.eschool.beans.HeadWiseReportData;
 import com.eschool.beans.Travel;
 import com.eschool.beans.TravelDateWiseReportData;
+import com.eschool.beans.TravelDateWiseReportData2;
 import com.eschool.beans.TravelEventUser;
 import com.eschool.beans.User;
 
@@ -73,6 +75,21 @@ public class TravelController {
 
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	@PutMapping("updateTravelDetails")
+	public ResponseEntity<Object> updateTravelDetails(@RequestBody Travel travel) {
+		Map<String, String> data = new HashMap<>();
+		String message="";
+		try {
+			trepo.save(travel);
+			message = "Data updated successfully";			
+		} catch (Exception e) {
+			message = e.getMessage();
+		}		
+		data.put("msg", message);
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+	
 	//-------------------------------GET ALL TRAVEL OBJECTS FROM DB--------------------------------------------------------------------
 	@GetMapping("getAllTravels")
 	public List<Travel> getAllTravels(){		
@@ -130,6 +147,205 @@ public class TravelController {
 	}
 		return data;
 	}
+	
+	@GetMapping("getTravelReportDateWise2/{eventId}")
+	List<TravelDateWiseReportData2> getTravelReportDateWiseByEventId2(@PathVariable int eventId) {	
+	List<TravelDateWiseReportData2> data=new ArrayList<>();
+	String query1="select distinct arrival_date from travel where event_id=? order by arrival_date";
+	Connection cn=null;
+	try
+	{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		cn=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		PreparedStatement ps1=cn.prepareStatement(query1);
+		ps1.setInt(1, eventId);
+		ResultSet rs1=ps1.executeQuery();
+		while(rs1.next())
+		{
+			String trainNames[]=new String[4];
+			trainNames[0]="";
+			trainNames[1]="";
+			trainNames[2]="";
+			trainNames[3]="";
+			
+			int trainPerson[]=new int[4];
+			int flightPerson[]=new int[4];
+			int roadPerson[]=new int[4];
+			TravelDateWiseReportData2 record=new TravelDateWiseReportData2();
+			java.sql.Date arrival_date=rs1.getDate(1);
+			String query2="select count(*),count(distinct travel.family_id) from travel where event_id=? and arrival_date=?";
+			PreparedStatement ps2=cn.prepareStatement(query2);
+			ps2.setInt(1, eventId);			
+			ps2.setDate(2,arrival_date);			
+			ResultSet rs2=ps2.executeQuery();
+			rs2.next();
+			int totalPerson=rs2.getInt(1);			
+			int totalFamilies=rs2.getInt(2);
+			String query4="select t.arrival_mode_of_transport,t.arrival_train_name,t.arrival_time from travel t where t.arrival_date=? and t.event_id=?";
+			PreparedStatement ps4=cn.prepareStatement(query4);
+			ps4.setDate(1,arrival_date);	
+			ps4.setInt(2, eventId);			
+			record.setTotalFamilies(totalFamilies);
+			record.setTotalPersons(totalPerson);
+			record.setTravelDate(arrival_date);			
+			ResultSet rs4=ps4.executeQuery();
+		
+		while(rs4.next())
+		{
+			String travelMode=rs4.getString(1);			
+			String travelTrainDetails=rs4.getString(2);
+			String arrivalTime=rs4.getString(3);
+			int slots=Integer.parseInt(arrivalTime.split(":")[0]);
+			int index;
+			if(slots>0 && slots<=7)
+				index=0;
+			else if(slots>7 && slots<=12)
+				index=1;
+			else if(slots>12 && slots<=17)
+				index=2;
+			else 
+				index=3;
+			System.out.println(travelMode+":"+travelMode.length());
+			if(travelMode.equals("Train"))
+			{
+			trainPerson[index]++;
+			if(!trainNames[index].contains(travelTrainDetails))
+				trainNames[index]=trainNames[index]+","+travelTrainDetails;
+			}
+			else if(travelMode.equals("Flight"))
+			{
+			flightPerson[index]++;
+			}
+			else
+			{
+			roadPerson[index]++;
+			}		
+			
+		}	
+		record.setFlightPerson(flightPerson);
+		record.setRoadPerson(roadPerson);
+		record.setTrainNames(trainNames);
+		record.setTrainPerson(trainPerson);
+		
+			data.add(record);
+		}
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getMessage());
+	}
+	finally {
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		return data;
+	}
+	
+	
+	@GetMapping("getTravelReportDateWise2/{eventId}/{isDesc}")
+	List<TravelDateWiseReportData2> getTravelReportDateWiseByEventId2(@PathVariable int eventId,@PathVariable int isDesc) {	
+	List<TravelDateWiseReportData2> data=new ArrayList<>();
+	String query1="select distinct departure_date from travel where event_id=? order by departure_date";
+	Connection cn=null;
+	try
+	{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		cn=DriverManager.getConnection("jdbc:mysql://localhost/ajapa?user=root&password=root");
+		PreparedStatement ps1=cn.prepareStatement(query1);
+		ps1.setInt(1, eventId);
+		ResultSet rs1=ps1.executeQuery();
+		while(rs1.next())
+		{
+			String trainNames[]=new String[4];
+			trainNames[0]="";
+			trainNames[1]="";
+			trainNames[2]="";
+			trainNames[3]="";			
+			int trainPerson[]=new int[4];
+			int flightPerson[]=new int[4];
+			int roadPerson[]=new int[4];
+			TravelDateWiseReportData2 record=new TravelDateWiseReportData2();
+			java.sql.Date arrival_date=rs1.getDate(1);
+			String query2="select count(*),count(distinct travel.family_id) from travel where event_id=? and departure_date=?";
+			PreparedStatement ps2=cn.prepareStatement(query2);
+			ps2.setInt(1, eventId);			
+			ps2.setDate(2,arrival_date);			
+			ResultSet rs2=ps2.executeQuery();
+			rs2.next();
+			int totalPerson=rs2.getInt(1);			
+			int totalFamilies=rs2.getInt(2);
+			String query4="select t.departure_mode_of_transport,t.departure_train_name,t.departure_time from travel t where t.departure_date=? and t.event_id=?";
+			PreparedStatement ps4=cn.prepareStatement(query4);
+			ps4.setDate(1,arrival_date);	
+			ps4.setInt(2, eventId);			
+			record.setTotalFamilies(totalFamilies);
+			record.setTotalPersons(totalPerson);
+			record.setTravelDate(arrival_date);			
+			ResultSet rs4=ps4.executeQuery();
+		
+		while(rs4.next())
+		{
+			String travelMode=rs4.getString(1);			
+			String travelTrainDetails=rs4.getString(2);
+			String arrivalTime=rs4.getString(3);
+			int slots=Integer.parseInt(arrivalTime.split(":")[0]);
+			int index;
+			if(slots>0 && slots<=7)
+				index=0;
+			else if(slots>7 && slots<=12)
+				index=1;
+			else if(slots>12 && slots<=17)
+				index=2;
+			else 
+				index=3;
+			System.out.println(travelMode+":"+travelMode.length());
+			if(travelMode.equals("Train"))
+			{
+			trainPerson[index]++;
+			if(!trainNames[index].contains(travelTrainDetails))
+				trainNames[index]=trainNames[index]+","+travelTrainDetails;
+			}
+			else if(travelMode.equals("Flight"))
+			{
+			flightPerson[index]++;
+			}
+			else
+			{
+			roadPerson[index]++;
+			}		
+			
+		}	
+		record.setFlightPerson(flightPerson);
+		record.setRoadPerson(roadPerson);
+		record.setTrainNames(trainNames);
+		record.setTrainPerson(trainPerson);
+		
+			data.add(record);
+		}
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getMessage());
+	}
+	finally {
+		try {
+			cn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		return data;
+	}
+	
+	
+	
+	
+	
 	
 	@GetMapping("getTravelReportFamilyWise/{eventId}")
 	List<HeadWiseReportData> getTravelReportFamilyWiseByEventId(@PathVariable int eventId) {	
@@ -189,10 +405,7 @@ public class TravelController {
 			record.getReachingTrainDetails().add(reachingTrainDetails);			
 			record.getLeavingDate().add(leavingDate);
 			record.getLeavingMode().add(leavingMode);
-			record.getLeavingTrainDetails().add(leavingTrainDetails);
-			
-			
-			
+			record.getLeavingTrainDetails().add(leavingTrainDetails);			
 		}
 		record.setHeadName(fullName);
 		record.setEmailId(email);
@@ -200,8 +413,7 @@ public class TravelController {
 		record.setTotalFemaleMembers(totalFemale);
 		record.setTotalMaleMembers(totalMale);
 		record.setTotalPersons(totalPerson);
-		record.setTotalSeniorCitizens(totalSeniors);
-		
+		record.setTotalSeniorCitizens(totalSeniors);		
 		data.add(record);
 		}
 	}
@@ -219,11 +431,7 @@ public class TravelController {
 	}
 		return data;
 	}
-	
-	
-	
-	
-	
+		
 	@GetMapping("getTravelReportDateWise/{eventId}/{isDesc}")
 	List<TravelDateWiseReportData> getTravelReportDateWiseByEventId(@PathVariable int eventId,@PathVariable int isDesc) {	
 	List<TravelDateWiseReportData> data=new ArrayList<>();
@@ -321,6 +529,7 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureTime(tt.getDepartureTime());
 			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
+			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());
 			teu.setDescription(tt.getDescription());
 			teu.setUserName(urepo.findUserNameByUserId(tt.getUserId()));
 			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
@@ -354,13 +563,13 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureTime(tt.getDepartureTime());
 			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
+			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());			
 			teu.setDescription(tt.getDescription());			
 			User user=urepo.findById(tt.getUserId());
 			teu.setUserName(user.getFullName());
 			Event event=erepo.findById(tt.getEventId());
 			teu.setEventName(event.getEventName());
 			t1.add(teu);
-
 		}
 		
 		return t1;
@@ -388,6 +597,7 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureTime(tt.getDepartureTime());
 			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
+			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());
 			teu.setDescription(tt.getDescription());
 			
 			User user=urepo.findById(tt.getUserId());

@@ -1,24 +1,20 @@
 package com.eschool;
-
+import java.util.Base64;
 import java.io.File;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,21 +24,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eschool.beans.Event;
 import com.eschool.beans.Notification;
 import com.eschool.beans.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletContext;
-
 @RestController
 public class UserController {
 	String message;
 	@Autowired
 	UserRepository urepo;
+	@Autowired
+	EventRepository erepo;
 	@Autowired
 	ServletContext context;
 	@PersistenceContext
@@ -50,15 +47,13 @@ public class UserController {
 	private final UserService userService;
 	@Autowired
     private NotificationService emailService;
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
     
+    
 public String sendEmail(Notification notification) {
-    	
-    	String message="";
-    	
+    	String message="";    	
     	try {
         // Assuming EmailRequest is a DTO containing 'to', 'subject', and 'body' fields
        emailService.sendEmail(notification.getReceiver(), notification.getSubject(), notification.getBody());
@@ -69,15 +64,10 @@ public String sendEmail(Notification notification) {
     	}
        return message;
     }
-
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		message="";
-		Map<String, String> data = new HashMap<>();
-		
-		
-		
-		
+		Map<String, String> data = new HashMap<>();		
 		try {
 			
 			if(urepo.findByEmail(user.getEmail())!=null) {
@@ -96,9 +86,7 @@ public String sendEmail(Notification notification) {
 			u.setFamilyId(id1);
 			urepo.save(u);
 			message = "Data saved successfully";
-			}
-			
-			
+			}			
 			
 		} catch (Exception e) {
 			message = e.getMessage();
@@ -106,6 +94,21 @@ public String sendEmail(Notification notification) {
 		data.put("msg", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	@GetMapping("getValuesForDashBoard")
+	public ResponseEntity<Object> getValuesForDashBoard() {
+		Map<String, String> data = new HashMap<>();		
+		List<User> pusers=urepo.findUsersByStatus(0);
+		List<User> ausers=urepo.findUsersByStatus(1);
+		List<User> rusers=urepo.findUsersByStatus(2);
+		List<Event> events=erepo.findAll();
+		data.put("pending_users", ""+pusers.size());
+		data.put("approved_users", ""+ausers.size());
+		data.put("rejected_users", ""+rusers.size());
+		data.put("total_events", ""+events.size());	
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+
 	
 	
 	@PostMapping("signup2")
@@ -159,23 +162,23 @@ public String sendEmail(Notification notification) {
 	
 	// --------------------------------LOGIN------------------------------------------------------------------------------------------------------
 	@PostMapping("login")
-	public ResponseEntity<Object> login(@RequestBody User user) {
+	public ResponseEntity<Object> login(@RequestBody User user) {		
 		String token_message = "";
 		String type="";
 		String isAdmin="";
-
 		Map<String, String> data = new HashMap<>();
 		try
-		{
-		 String identifier = user.getIdentifier();
-        String password = user.getPassword();
-        User u = userService.getUserByEmailOrMobileNumberAndPassword(identifier, password);
-        System.out.println("this is our user");
-        System.out.println(u);
-		
-		if (u != null) {
+		{		
+		String identifier = user.getIdentifier();
+		String password = user.getPassword();
+        User u = userService.getUserByEmailOrMobileNumber(identifier);
+      	if (u != null) {
 			if(u.getStatus()!=1) {
 				token_message="Unapproved User";
+			}
+			else if(!u.getPassword().equals(password))
+			{
+				token_message="Invalid Password";
 			}
 			else {
 			// The code to convert user information into JWT token
@@ -185,13 +188,12 @@ public String sendEmail(Notification notification) {
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
 			type=u.getUserType();
-			isAdmin=""+u.isAdmin();
-			
+			isAdmin=""+u.isAdmin();			
 			token_message = token;
 			}
 		}
 		else {
-			token_message = "Invalid User information";
+			token_message = "Invalid User Name";
 		}
 		
 		}
@@ -304,7 +306,6 @@ public String sendEmail(Notification notification) {
 		User existingUser = urepo.findByEmail(email);
 
 		if (existingUser != null) {
-
 			existingUser.setStatus(1);
 			urepo.save(existingUser);
 			message="User Approved";
@@ -387,7 +388,7 @@ public String sendEmail(Notification notification) {
 	
 	@GetMapping("getUsers/{start}/{end}")
 	public List<User> getUsers(@PathVariable int start, @PathVariable int end) {
-	    List<User> users = entityManager.createQuery("from User", User.class).getResultList();
+	    List<User> users = urepo.getAllUsersOrderByCountryStateCityFamilyId();
 	    
 	    if (start >= 0 && end <= users.size() && start <= end) {
 	        return users.subList(start, end);
@@ -396,6 +397,9 @@ public String sendEmail(Notification notification) {
 	        return Collections.emptyList();
 	    }
 	}
+	
+	
+	
 	
 	// ----------------------------TO GET EMAIL ADDRESS----------------------------------------------------------------------------------------------------------------
 
@@ -446,8 +450,7 @@ public String sendEmail(Notification notification) {
 		
 	//---------------------------------TO GET LIST OF UNAPPROVED USERS------------------------------------------------------------------------------	
 		@GetMapping("getUsersToApprove")
-		public List<User> getUsersToApprove(){
-			
+		public List<User> getUsersToApprove(){			
 			return urepo.findUsersByStatus(0);
 		}
 		
@@ -463,6 +466,13 @@ public String sendEmail(Notification notification) {
 			
 			return urepo.findAll();
 		}
+		
+		@GetMapping("getAllUsersOrderByCountryStateCityFamily")
+		public List<User> getAllUsersOrderByCountryStateCityFamily(){
+			
+			return urepo.getAllUsersOrderByCountryStateCityFamilyId();
+		}
+		
 	//----------------------------TO GET USER DETAILS BY ID--------------------------------------------------------------------
 		@GetMapping("getUserById/{id}")
 		public User getUserById(@PathVariable int id) {
@@ -533,6 +543,15 @@ public String sendEmail(Notification notification) {
 					
 					return urepo.findUsersByStatus(1);
 				}
+				
+				@GetMapping("getUsersByStatus/{status}")
+				public List<User> getUsersByStatus(@PathVariable int status){
+					
+					return urepo.getAllUsersByStatusOrderByCountryStateCityFamilyId(status);
+				}
+				
+				
+				
 	//---------------------------------------------------------------------------------------------------------------------------------------
 				@GetMapping("getAllAdmins")
 				public List<User> getAllAdmins(){
@@ -552,9 +571,6 @@ public String sendEmail(Notification notification) {
 				//--------------------------------------------------------------------------------------------------------------
 				@PostMapping("saveImage2")
 				public ResponseEntity<Object> saveImage2(@RequestParam("file") MultipartFile file, @RequestParam("email") String email) {
-
-					
-
 					// String imageName=new java.util.Date().toString()+".jpg";
 					String path = context.getRealPath("/") + "\\images";
 					File fl = new File(path);
@@ -582,6 +598,8 @@ public String sendEmail(Notification notification) {
 					data.put("message", message);
 					return new ResponseEntity<>(data, HttpStatus.OK);
 				}
+				
+				
 				
 				
 				//--------------------------------------------------------------------------------------------------------------------------------------

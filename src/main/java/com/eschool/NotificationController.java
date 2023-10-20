@@ -33,58 +33,46 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 public class NotificationController {
+	@Autowired
+    private NotificationService emailService;
+	@Autowired
+	UserRepository urepo;	
+	private final OtpsService otpsService;
+	private final EmailOTPService emailotpService;
+
 	void sendSMS(String pno,String otp)
 	{
 	try {
+		System.out.println(otp);
 	String requestUrl  = "http://login.easywaysms.com/app/smsapi/index.php?key=364844DA3CBEC7&campaign=0&routeid=7&type=text&contacts="+pno+"&%20senderid=TOMKUM&msg=Dear%20User,%20Your%20OTP%20is%20"+otp+"%20for%20registration/AJAPAYOG.%20Valid%20for%2030%20minutes.%20Please%20do%20not%20share%20this%20OTP.%20Regards%20TOMKUM&template_id=1207169037651138885";
 	URL url = new URL(requestUrl);
 	HttpURLConnection uc = (HttpURLConnection)url.openConnection();
 	System.out.println(uc.getResponseMessage());
 	uc.disconnect();
 	} catch(Exception ex) {
-	System.out.println("Error"+ex.getMessage());
+	System.out.println("Error SMS API"+ex.getMessage());
 	}
 	}
 
-	@Autowired
-    private NotificationService emailService;
-	@Autowired
-	UserRepository urepo;
-	
-	private final OtpsService otpsService;
-	private final EmailOTPService emailotpService;
-
-	
-	@Autowired
-    public NotificationController(OtpsService otpService, EmailOTPService emailotpService) {
+	public NotificationController(OtpsService otpService, EmailOTPService emailotpService) {
         this.otpsService = otpService;
         this.emailotpService = emailotpService;
 
     }
-	
-
-	
-
-    
-	
 	@PostMapping("loginWithSmsOTP1/{pno}")
     public String loginWithSmsOTP1(@PathVariable String pno, HttpServletRequest request) {
-    	
-    	String message="";
-    	
-    	 // Create a Random object
+     	String message="";
+     User user=urepo.findByMobileNum(pno);
+     if(user==null)
+    	 message="Invalid Pno";
+     else
+     {
         Random random = new Random();
-
         // Generate a random 4-digit OTP
         int number = 1000 + random.nextInt(9000);
         String otp = ""+number;
-        
-        
-       Otps otp1=new Otps(0, number, pno);
-        
-       otpsService.saveOTP(otp1);
-       
-        System.out.println(otp);
+        Otps otp1=new Otps(0, number, pno);
+        otpsService.saveOTP(otp1);
        try {
     	   sendSMS(pno, otp);
     	   message="OTP Sent";
@@ -92,7 +80,7 @@ public class NotificationController {
        catch(Exception e) {
     	   message=e.getMessage();
        }
-    	
+     }
     	return message;
     	
     }
@@ -104,25 +92,10 @@ public class NotificationController {
 		String isAdmin="";
 
 		Map<String, String> data = new HashMap<>();
-
-    	
-    	System.out.println(pno);
-    	System.out.println(otp);
-    	
-    	try {
+	try {
     	int otp1= otpsService.getLatestOTPByPno(pno);
-    	
-    	
-    	System.out.println(""+otp1);
     	if(otp.equals(""+otp1)) {
-    		
     	 User u= urepo.findByMobileNum(pno);
-    	 
-    	 
-    	 System.out.println(u.getFullName());
-    	 
-    	 
-    	 
     	 if (u != null) {
     		 if(u.getStatus()!=1) {
     			 token_message="Unapproved User";
@@ -136,27 +109,16 @@ public class NotificationController {
 					.compact();
  			type=u.getUserType();
  			isAdmin=""+u.isAdmin();
- 			
  			token_message = token;
     		 }
-    	 
- 			
     	 }else {
  			token_message = "Invalid User information";
  		}
-    		
-    	
-    	
-    	
-    	
-    
     	}
     	}
     	catch(Exception e) {
     		token_message="No user found";
     	}
-		
-    
     	data.put("token", token_message);
 		data.put("type", type);
 		return new ResponseEntity<>(data, HttpStatus.OK);

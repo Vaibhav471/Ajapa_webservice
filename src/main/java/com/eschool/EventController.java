@@ -189,7 +189,7 @@ System.out.println("Error"+ex.getMessage());
 			existingEvent.setListedBy(event.getListedBy());
 			existingEvent.setStartDate(event.getStartDate());
 			existingEvent.setEventStatus(event.getEventStatus());
-			existingEvent.setOther(event.getOther());
+			//existingEvent.setOther(event.getOther());
 			existingEvent.setStartTime(event.getStartTime());
 			existingEvent.setEndTime(event.getEndTime());
 
@@ -316,13 +316,11 @@ System.out.println("Error"+ex.getMessage());
 		
 		//------------------------------TO GET ALL EVENTS IN A PAGINATION FORMAT-------------------------------------------------------------
 		@GetMapping("getEvents/{start}/{end}")
-		public List<Event> getUsers(@PathVariable int start, @PathVariable int end) {
-		    List<Event> events = entityManager.createQuery("from Event", Event.class).getResultList();
-		    
-		    
-		    
+		public List<Event> getEvents(@PathVariable int start, @PathVariable int end) {
+		   try
+		   {
+			List<Event> events = erepo.findAll();
 		    if (start >= 0 && end < events.size() && start <= end) {
-		    	
 		        return events.subList(start-1, end);
 		    } 
 		    else if (start >= 0 && start <= end) 
@@ -330,9 +328,13 @@ System.out.println("Error"+ex.getMessage());
 		    	return events.subList(start-1, events.size());
 		    }
 		    else  {
-		        // Handle invalid start and end values, e.g., return an empty list or an error response.
 		        return Collections.emptyList();
 		    }
+		   }
+		   catch(Exception e)
+		   {
+		        return Collections.emptyList();
+		   }
 		}
 		
 		//----------------------------------------------------------------------------------------------------------------------------------------------
