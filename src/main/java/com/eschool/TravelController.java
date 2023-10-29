@@ -1,6 +1,4 @@
 package com.eschool;
-
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,12 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogRecord;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -53,7 +51,7 @@ public class TravelController {
 	@Autowired
 	EventRepository erepo;
 	private final TravelService travelService;
-    @Autowired
+   
     public TravelController(TravelService travelService) {
         this.travelService = travelService;
     }
@@ -480,8 +478,8 @@ public class TravelController {
 	}
 	
 	
-	@GetMapping("getTravelByUserId/{id}")
-	public List<TravelEventUser> getTravelByUserId(@PathVariable int id) {
+	@GetMapping("getTravelByUserId/{id}/{start}/{end}")
+	public ResponseEntity<Object> getTravelByUserId(@PathVariable int id,@PathVariable int start,@PathVariable int end) {
 		
 		List<Travel> t= trepo.findAllByUserId(id);
 List<TravelEventUser> t1=new ArrayList<>();
@@ -506,8 +504,30 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setUserName(urepo.findUserNameByUserId(tt.getUserId()));
 			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
 			t1.add(teu);
-		}		
-		return t1;	
+		}	
+		
+		List<TravelEventUser> subTravelEventUser=new ArrayList<>();
+		try
+		   {
+			if (start >= 0 && end < t1.size() && start <= end) {
+				subTravelEventUser=t1.subList(start-1, end);
+		    } 
+		    else if (start >= 0 && start <= end) 
+		    {
+		    	subTravelEventUser=t1.subList(start-1,t1.size());
+		    }
+		    else  {
+		    	subTravelEventUser=Collections.emptyList();
+		    }
+		   }
+		   catch(Exception e)
+		   {
+			   subTravelEventUser=Collections.emptyList();
+		   }
+			Map<String, Object> data = new HashMap<>();
+		    data.put("data", subTravelEventUser);
+		    data.put("currentDate", new java.util.Date().toString());		    
+		    return new ResponseEntity<>(data, HttpStatus.OK);		
 	}	
 	@GetMapping("getAllTravel1")
 	public List<TravelEventUser> getAllTravel1() {		
@@ -763,11 +783,8 @@ List<TravelEventUser> t1=new ArrayList<>();
     }
 
 	@GetMapping("getTravelByEventId/{id}")
-	public List<Travel>  getTravelByEventId(@PathVariable int id){
-		
+	public List<Travel>  getTravelByEventId(@PathVariable int id)
+	{		
 		return trepo.findAllByEventId(id);
 	}
-    }
-	
-
-
+}

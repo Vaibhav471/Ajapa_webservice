@@ -316,31 +316,63 @@ System.out.println("Error"+ex.getMessage());
 		
 		//------------------------------TO GET ALL EVENTS IN A PAGINATION FORMAT-------------------------------------------------------------
 		@GetMapping("getEvents/{start}/{end}")
-		public List<Event> getEvents(@PathVariable int start, @PathVariable int end) {
-		   try
+		public ResponseEntity<Object> getEvents(@PathVariable int start, @PathVariable int end) {
+			List<Event> myEvents=null;
+			List<Event> events=null;
+			try
 		   {
-			List<Event> events = erepo.findAll();
+			 events= erepo.findAll();
 		    if (start >= 0 && end < events.size() && start <= end) {
-		        return events.subList(start-1, end);
+		        myEvents=events.subList(start-1, end);
 		    } 
 		    else if (start >= 0 && start <= end) 
 		    {
-		    	return events.subList(start-1, events.size());
+		    	myEvents=events.subList(start-1, events.size());
 		    }
 		    else  {
-		        return Collections.emptyList();
+		    	myEvents=Collections.emptyList();
 		    }
 		   }
 		   catch(Exception e)
 		   {
-		        return Collections.emptyList();
+			   myEvents=Collections.emptyList();
 		   }
+			Map<String, Object> data = new HashMap<>();
+		    data.put("data", myEvents);
+		    data.put("size", events.size());		    
+		    return new ResponseEntity<>(data, HttpStatus.OK);
 		}
 		
+		@GetMapping("getEventsByStatus/{status}/{start}/{end}")
+		public ResponseEntity<Object> getEventsByStatus(@PathVariable int status,@PathVariable int start, @PathVariable int end) {
+			List<Event> myEvents=null;
+			List<Event> events=null;
+			try
+		   {
+			 events= erepo.findAllByEventStatus(status);
+		    if (start >= 0 && end < events.size() && start <= end) {
+		        myEvents=events.subList(start-1, end);
+		    } 
+		    else if (start >= 0 && start <= end) 
+		    {
+		    	myEvents=events.subList(start-1, events.size());
+		    }
+		    else  {
+		    	myEvents=Collections.emptyList();
+		    }
+		   }
+		   catch(Exception e)
+		   {
+			   myEvents=Collections.emptyList();
+		   }
+			Map<String, Object> data = new HashMap<>();
+		    data.put("data", myEvents);
+		    data.put("size", events.size());		    
+		    return new ResponseEntity<>(data, HttpStatus.OK);
+		}
 		//----------------------------------------------------------------------------------------------------------------------------------------------
 	    @GetMapping("getNumberOfEvents")
-	    public long getNumerOfEvents() {
-	    	
+	    public long getNumerOfEvents() {	    	
 	    	return erepo.count();
 	    }
 	    
@@ -353,27 +385,20 @@ System.out.println("Error"+ex.getMessage());
 				d1 = sd.parse(date);
 			} catch (ParseException e) {
 				System.out.println("Error:"+e.getMessage());
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	    	System.out.println(date);
-	    	System.out.println(d1.toString());
-	    	return erepo.findAllByStartDateGreaterThan(d1);
+	     	return erepo.findAllByStartDateGreaterThan(d1);
 	    }
-	    
 	    //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    @GetMapping("getAllEvents")
 	    public List<Event> getAllEvents(){	    	
 	    	return erepo.findAll();
 	    }
-	    
 	    //----------------------------------------------------------------------------------------------------------------
 	    @GetMapping("getAllActiveEvents")
 	    public List<Event> getAllActiveEvents(){
-	    	
 	    	return erepo.findAllByOrderByStartDateDesc();
 	    }
-	    
 	    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    @PostMapping("deleteEvent/{eventId}")
 	    public String deleteEvent(@PathVariable int eventId) {
@@ -390,32 +415,17 @@ System.out.println("Error"+ex.getMessage());
 	    	}
 	    	return message;
 	    }
-	    
 	    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    @PostMapping("sendSmsByEventId/{eventId}")
 	    public String sendSmsByEventId(@PathVariable int eventId, @RequestBody String message) {
-	    	String message1="";
-	    	
+	    	String message1="";	    	
 	    	List<Travel> travel=trepo.findAllByEventId(eventId);
-	    	System.out.println(travel);
-	    	System.out.println(travel.size());
-	    	
-
 	    	for(Travel t:travel) {
 	    		System.out.println(t.getUserId());	
-	    User user=urepo.findById(t.getUserId());
-	    
-	         System.out.println(user.getMobileNum());
+	    		User user=urepo.findById(t.getUserId());
 	    	//sendSMS(user.getMobileNum(),message);
 	    	}
 	    	return message1;
-	    	
-	    	
 	    }
-	    
 	    //----------------------------------------------------------------------------------------------------------------------
-	    
-	    
-	    
-
 }
