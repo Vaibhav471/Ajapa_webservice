@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.PutExchange;
-
 import com.eschool.beans.Event;
 import com.eschool.beans.HeadWiseReportData;
 import com.eschool.beans.Travel;
@@ -87,6 +85,22 @@ public class TravelController {
 		data.put("msg", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+	@DeleteMapping("deleteTravelDetails/{travelId}")
+	public ResponseEntity<Object> deleteTravelDetails(@PathVariable int travelId) {
+		Map<String, String> data = new HashMap<>();
+		String message="";
+		try {
+			Travel travel=trepo.findById(travelId);
+			trepo.delete(travel);
+			message = "Data deleted successfully";			
+		} catch (Exception e) {
+			message = e.getMessage();
+		}		
+		data.put("msg", message);
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+	
 	
 	//-------------------------------GET ALL TRAVEL OBJECTS FROM DB--------------------------------------------------------------------
 	@GetMapping("getAllTravels")
@@ -339,11 +353,6 @@ public class TravelController {
 	}
 		return data;
 	}
-	
-	
-	
-	
-	
 	
 	@GetMapping("getTravelReportFamilyWise/{eventId}")
 	List<HeadWiseReportData> getTravelReportFamilyWiseByEventId(@PathVariable int eventId) {	

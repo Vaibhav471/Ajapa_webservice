@@ -13,34 +13,27 @@ import com.eschool.beans.EventWithPermission;
 @RestController
 public class EventPermissionController {
 	@Autowired
-	EventPermissionRepository eprepo;
-	
+	EventPermissionRepository eprepo;	
 	@Autowired
-	EventRepository erepo;
-	
+	EventRepository erepo;	
 	@PostMapping("saveEventPermission")
 	public String save(@RequestBody EventPermission ep) {
-		String message;
-		
+		String message;		
 		EventPermission e=eprepo.findByAdminIdAndEventId(ep.getAdminId(), ep.getEventId());
-		
 		if(e==null) {
 		try {
 		eprepo.save(ep);
 		message="Entity Saved";
 		}
 		catch(Exception ee) {
-			message=ee.getMessage();
-			
+			message=ee.getMessage();			
 		}
 		}
 		else {
 			e.setCanDelete(ep.getCanDelete());
-			e.setCanModify(ep.getCanModify());
-			
+			e.setCanModify(ep.getCanModify());			
 			eprepo.save(e);
-			message="Event Permissions Updated";
-			
+			message="Event Permissions Updated";			
 		}
 		
 		return message;
