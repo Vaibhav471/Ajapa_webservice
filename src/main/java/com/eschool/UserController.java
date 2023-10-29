@@ -126,15 +126,9 @@ public String sendEmail(Notification notification) {
 				String chunks[] = jwtToken.split("\\.");
 				String header = new String(decoder.decode(chunks[0]));
 				String payload = new String(decoder.decode(chunks[1]));
-				System.out.println(header);
-				System.out.println(payload);
 				ObjectMapper mapper = new ObjectMapper();
 				Map<String, Object> map = mapper.readValue(payload, Map.class);
-				System.out.println("this is our email");
-				System.out.println(map.get("email"));
-				System.out.println(map.get("id"));
 				id=Integer.parseInt(map.get("familyId").toString());
-				System.out.println("our id is "+id);
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Failed to decode JWT: " + e.getMessage());
@@ -223,14 +217,9 @@ public String sendEmail(Notification notification) {
 				String chunks[] = jwtToken.split("\\.");
 				String header = new String(decoder.decode(chunks[0]));
 				String payload = new String(decoder.decode(chunks[1]));
-				System.out.println(header);
-				System.out.println(payload);
 				ObjectMapper mapper = new ObjectMapper();
 				Map<String, String> map = mapper.readValue(payload, Map.class);
-				System.out.println("this is our email");
-				System.out.println(map.get("email"));
 				email = map.get("email"); // getting email from token in a string variable
-
 				id=Integer.parseInt(map.get("id"));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -251,10 +240,14 @@ public String sendEmail(Notification notification) {
 			if (user.getGender() != null) {
 				existingUser.setGender(user.getGender());
 			}
+			if (user.getEmail() != null) {
+				existingUser.setEmail(user.getEmail());
+			}
 			existingUser.setWhatsappNum(user.getWhatsappNum());
 			if (user.getPassword() != null) {
 				existingUser.setPassword(user.getPassword());
 			}
+			
 			existingUser.setBloodGrp(user.getBloodGrp());
 			existingUser.setOccupation(user.getOccupation());
 			existingUser.setQualification(user.getQualification());
@@ -267,21 +260,15 @@ public String sendEmail(Notification notification) {
 			if (user.getCity() != null) {
 				existingUser.setCity(user.getCity());
 			}
-
 			existingUser.setDikshaDt(user.getDikshaDt());
 			existingUser.setAge(user.getAge());
 			existingUser.setPincode(user.getPincode());
-
 			urepo.save(existingUser);
-
-			message = "user updated";
-			
+			message = "user updated";			
 			Notification n=new Notification();
 			n.setReceiver(email);
 			n.setSubject("update information");
 			n.setBody("your profile has been updated successfully");
-			
-			
 			sendEmail(n);
 		}
 
@@ -544,10 +531,28 @@ public String sendEmail(Notification notification) {
 					return urepo.findUsersByStatus(1);
 				}
 				
-				@GetMapping("getUsersByStatus/{status}")
-				public List<User> getUsersByStatus(@PathVariable int status){
-					
-					return urepo.getAllUsersByStatusOrderByCountryStateCityFamilyId(status);
+				@GetMapping("getUsersByStatus/{status}/{start}/{end}")
+				public List<User> getUsersByStatus(@PathVariable int status,@PathVariable int start,@PathVariable int end){
+					List<User> users=urepo.getAllUsersByStatusOrderByCountryStateCityFamilyId(status);
+					List<User> subUsers=new ArrayList<>();
+						try
+					   {
+						    if (start >= 0 && end <users.size() && start <= end) {
+						    	subUsers=users.subList(start-1, end);
+					    } 
+					    else if (start >= 0 && start <= end) 
+					    {
+					    	subUsers=users.subList(start-1, users.size());
+					    }
+					    else  {
+					    	subUsers=Collections.emptyList();
+					    }
+					   }
+					   catch(Exception e)
+					   {
+						   subUsers=Collections.emptyList();
+					   }
+					return subUsers;
 				}
 				
 				

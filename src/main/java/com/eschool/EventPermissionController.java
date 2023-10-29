@@ -52,8 +52,7 @@ public class EventPermissionController {
 		ArrayList<EventWithPermission> ewp=new ArrayList<EventWithPermission>();
 		List<EventPermission> ep=eprepo.findByAdminId(adminId);
 		
-		for(EventPermission e:ep) {
-			
+		for(EventPermission e:ep) {			
 			Event ev=erepo.findById(e.getEventId());
 			EventWithPermission ee= new EventWithPermission();
 			ee.setEventId(ev.getEventId());
@@ -61,6 +60,7 @@ public class EventPermissionController {
 			ee.setEventType(ev.getEventType());
 			ee.setEventLocation(ev.getEventLocation());
 			ee.setListedBy(ev.getListedBy());
+			ee.setAdminId(e.getAdminId());
 			ee.setStartTime(ev.getStartTime());
 			ee.setEndTime(ev.getEndTime());
 			ee.setEventStatus(ev.getEventStatus());
@@ -79,13 +79,10 @@ public class EventPermissionController {
 	
 //---------------------------------------------------------------------------------------------------------------
 	@GetMapping("getAllEventsWitPermissions")
-	public List<EventWithPermission> getAllEventsWitPermissions(){
-		
+	public List<EventWithPermission> getAllEventsWitPermissions(){		
 		ArrayList<EventWithPermission> ewp=new java.util.ArrayList<>();
-		List<EventPermission> ep=eprepo.findAll();
-		
-		for(EventPermission e:ep) {
-			
+		List<EventPermission> ep=eprepo.findAll();		
+		for(EventPermission e:ep) {			
 			Event ev=erepo.findById(e.getEventId());
 			EventWithPermission ee = new EventWithPermission();
 			ee.setEventId(ev.getEventId());
@@ -93,6 +90,7 @@ public class EventPermissionController {
 			ee.setEventType(ev.getEventType());
 			ee.setEventLocation(ev.getEventLocation());
 			ee.setListedBy(ev.getListedBy());
+			ee.setAdminId(e.getAdminId());
 			ee.setStartTime(ev.getStartTime());
 			ee.setEndTime(ev.getEndTime());
 			ee.setEventStatus(ev.getEventStatus());
@@ -101,12 +99,9 @@ public class EventPermissionController {
 			ee.setLockArrivalDate(ev.getLockArrivalDate());
 			ee.setLockDepartureDate(ev.getLockDepartureDate());
 			ee.setCanDelete(e.getCanDelete());
-			ee.setCanModify(e.getCanModify());
-			
-			ewp.add(ee);
-
-			 
+			ee.setCanModify(e.getCanModify());			
+			ewp.add(ee);			 
+		}		
+		return ewp;	
 		}
-		
-		return ewp;	}
 }
