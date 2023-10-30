@@ -10,18 +10,13 @@ import com.eschool.beans.Otps;
 
 @Service
 public class OtpsService {
-
-	private final OtpsRepository otpsRepository;
-
-    @Autowired
+	private final OtpsRepository otpsRepository;    
     public OtpsService(OtpsRepository otpRepository) {
         this.otpsRepository = otpRepository;
     }
-
     public void saveOTP(Otps otp) {
         otpsRepository.save(otp);
     }
-
     public int getLatestOTPByPno(String pno) {
         List<Otps> otpList = otpsRepository.findByPnoOrderByIdDesc(pno);
         if(otpList!=null && otpList.size()!=0)

@@ -207,6 +207,10 @@ public String sendEmail(Notification notification) {
 	public ResponseEntity<Object> updateUser(@RequestBody User user,@RequestHeader("Authorization") String authorizationHeader) {
 		String message = "";
 		String email = "";
+		String token_message = "";
+		String type="";
+		String isAdmin="";
+		Map<String, String> data = new HashMap<>();
 		int id;
 		//System.out.println(authorizationHeader);// token from header displayed on console The code to decode the JWT token sent by client
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -270,6 +274,22 @@ public String sendEmail(Notification notification) {
 			n.setSubject("update information");
 			n.setBody("your profile has been updated successfully");
 			sendEmail(n);
+			//----------------------
+			String token = Jwts.builder().claim("fullName", existingUser.getFullName()).claim("email", existingUser.getEmail())
+					.claim("mobileNumber", existingUser.getMobileNum()).claim("id", existingUser.getId()).claim("type", existingUser.getUserType()).claim("familyId", existingUser.getFamilyId())
+					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
+					.compact();
+			type=existingUser.getUserType();
+			isAdmin=""+existingUser.isAdmin();			
+			token_message = token;
+			data.put("token", token_message);
+			data.put("type", type);
+			data.put("isAdmin",isAdmin );
+			
+
+			//---------------------------------------------
+			
 		}
 
 		else {
@@ -277,10 +297,7 @@ public String sendEmail(Notification notification) {
 
 		}
 
-		Map<String, String> data = new HashMap();
-		data.put("token", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
-
 	}
 
 	// -------------------TO APPROVE OR REJECT A USER'S APPLICATION TO SIGNUP----------------------------------------------------------

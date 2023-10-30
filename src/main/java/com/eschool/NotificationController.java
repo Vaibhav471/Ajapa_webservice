@@ -90,7 +90,6 @@ public class NotificationController {
     	String token_message = "";
 		String type="";
 		String isAdmin="";
-
 		Map<String, String> data = new HashMap<>();
 	try {
     	int otp1= otpsService.getLatestOTPByPno(pno);

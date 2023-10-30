@@ -39,12 +39,11 @@ public class EventPermissionController {
 		return message;
 	}
 	//-------------------------------------------------------------------------------------------------------------------
-	@GetMapping("getEventWithPermissions/{adminId}")
-	public List<EventWithPermission> getEventWithPermission(@PathVariable String adminId){
-		
+	@GetMapping("getEventWithPermissions/{adminId}/{start}/{end}")
+	public List<EventWithPermission> getEventWithPermission(@PathVariable String adminId,@PathVariable int start,@PathVariable int end){		
 		ArrayList<EventWithPermission> ewp=new ArrayList<EventWithPermission>();
 		List<EventPermission> ep=eprepo.findByAdminId(adminId);
-		
+		List<EventWithPermission> subEWP=new ArrayList<EventWithPermission>();
 		for(EventPermission e:ep) {			
 			Event ev=erepo.findById(e.getEventId());
 			EventWithPermission ee= new EventWithPermission();
@@ -62,12 +61,31 @@ public class EventPermissionController {
 			ee.setLockArrivalDate(ev.getLockArrivalDate());
 			ee.setLockDepartureDate(ev.getLockDepartureDate());
 			ee.setCanDelete(e.getCanDelete());
-			ee.setCanModify(e.getCanModify());
-			
+			ee.setCanModify(e.getCanModify());			
 			ewp.add(ee);			 
 		}
+		try
+		   {
+			 
+		    if (start >= 0 && end < ewp.size() && start <= end) {
+		        subEWP=ewp.subList(start-1, end);
+		    } 
+		    else if (start >= 0 && start <= end) 
+		    {
+		    	subEWP=ewp.subList(start-1, ewp.size());
+		    }
+		    else  {
+		    	subEWP=Collections.emptyList();
+		    }
+		   }
+		   catch(Exception e)
+		   {
+			   subEWP=Collections.emptyList();
+		   }
 		
-		return ewp;
+		
+		
+		return subEWP;
 	}
 	
 //---------------------------------------------------------------------------------------------------------------
