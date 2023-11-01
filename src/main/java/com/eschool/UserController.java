@@ -286,10 +286,7 @@ public String sendEmail(Notification notification) {
 			data.put("token", token_message);
 			data.put("type", type);
 			data.put("isAdmin",isAdmin );
-			
-
 			//---------------------------------------------
-			
 		}
 
 		else {

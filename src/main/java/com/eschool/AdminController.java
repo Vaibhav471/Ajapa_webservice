@@ -25,7 +25,6 @@ public class AdminController {
 	@Autowired
 	AdminRepository arepo;
 	
-	
 	@PostMapping("adminSignup")
 	public String adminSignup(@RequestBody Admin admin) {
 		String message;
