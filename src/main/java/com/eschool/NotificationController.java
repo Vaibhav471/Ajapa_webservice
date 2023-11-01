@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eschool.beans.EmailOTP;
 import com.eschool.beans.Notification;
 import com.eschool.beans.Otps;
 import com.eschool.beans.User;
@@ -98,6 +99,7 @@ public class NotificationController {
     	 if (u != null) {
     		 if(u.getStatus()!=1) {
     			 token_message="Unapproved User";
+    			 data.put("token", token_message);
     		 }
     		 else {
  			// The code to convert user information into JWT token
@@ -109,17 +111,20 @@ public class NotificationController {
  			type=u.getUserType();
  			isAdmin=""+u.isAdmin();
  			token_message = token;
+ 			data.put("token", token_message);
+ 			data.put("type", type);
     		 }
     	 }else {
  			token_message = "Invalid User information";
+ 			data.put("token", token_message);
  		}
     	}
     	}
     	catch(Exception e) {
     		token_message="No user found";
+    		data.put("token", token_message);    		
     	}
-    	data.put("token", token_message);
-		data.put("type", type);
+    	
 		return new ResponseEntity<>(data, HttpStatus.OK);
     }
     
@@ -140,13 +145,12 @@ public class NotificationController {
 
         // Generate a random 4-digit OTP
         int number = 1000 + random.nextInt(9000);
-        String otp = ""+number;
-        
-        
+        String otp = ""+number;     
         
         request.getSession().setAttribute("otp", otp);
         
-        
+        EmailOTP emailOTP=new EmailOTP(0,number,email);
+        emailotpService.saveOTP(emailOTP);
         try {
             // Assuming EmailRequest is a DTO containing 'receiver', 'subject', and 'body' fields
            emailService.sendEmail(email, "varification OTP", otp);
@@ -165,26 +169,13 @@ public class NotificationController {
     	String token_message = "";
 		String type="";
 		Map<String, String> data = new HashMap<>();
-
-    	
-    	System.out.println(email);
-    	System.out.println(otp);
-    	
     	int otp1= emailotpService.getLatestOTPByEmail(email);
-    	
-    	
-    	System.out.println(""+otp1);
-    	if(otp.equals(""+otp1)) {
-    		
+       	if(otp.equals(""+otp1)) {    		
     	 User u= urepo.findByEmail(email);
-    	 
-    	 System.out.println(u.getFullName());
-    	 
-    	 
-    	 
-    	 if (u != null) {
+     if (u != null) {
     		 if(u.getStatus()!=1) {
     			 token_message="Unapproved User";
+    			 data.put("token", token_message);    				
     		 }
     		 else {
  			// The code to convert user information into JWT token
@@ -193,29 +184,19 @@ public class NotificationController {
 					.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
 					.signWith(SignatureAlgorithm.HS256,"9wJYK7g67fTRC29iP6VnF89h5sW1rDcT3uXvA0qLmB4zE1pN8rS7zT0qF2eR5vJ3")
 					.compact();
- 			type=u.getUserType();
- 			
+ 			type=u.getUserType(); 			
  			token_message = token;
-    		 }
-    	 
- 			
-    	 }else {
+ 			data.put("token", token_message);
+ 			data.put("type", type);
+    		 }   				
+    	 }
+    	 else {
  			token_message = "Invalid User information";
- 		}
-    		
-    	
-    	
-    	
-    	
+ 			data.put("token", token_message); 			
+ 		}   	
     
-    	}
-		
-    
-    	data.put("token", token_message);
-		data.put("type", type);
-		return new ResponseEntity<>(data, HttpStatus.OK);
-    	
-    	
+    	}    	
+		return new ResponseEntity<>(data, HttpStatus.OK);    	
     }
     
     

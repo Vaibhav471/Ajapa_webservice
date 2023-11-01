@@ -10,9 +10,10 @@ import com.eschool.beans.EmailOTP;
 @Service
 public class EmailOTPService {
 
+	@Autowired
 	private final EmailOTPRepository otpsRepository;
 
-    @Autowired
+    
     public EmailOTPService(EmailOTPRepository otpRepository) {
         this.otpsRepository = otpRepository;
     }
@@ -21,8 +22,8 @@ public class EmailOTPService {
         otpsRepository.save(otp);
     }
 
-    public int getLatestOTPByEmail(String pno) {
-        List<EmailOTP> otpList = otpsRepository.findByEmailOrderByIdDesc(pno);
+    public int getLatestOTPByEmail(String email) {
+        List<EmailOTP> otpList = otpsRepository.findByEmailOrderByIdDesc(email);
         if(otpList!=null && otpList.size()!=0)
         {
         	EmailOTP otp=otpList.get(0);
