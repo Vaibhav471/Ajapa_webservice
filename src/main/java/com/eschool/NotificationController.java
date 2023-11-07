@@ -1,7 +1,12 @@
 package com.eschool;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +46,7 @@ public class NotificationController {
 	private final OtpsService otpsService;
 	private final EmailOTPService emailotpService;
 
-	void sendSMS(String pno,String otp)
+	/*void sendSMS(String pno,String otp)
 	{
 	try {
 		System.out.println(otp);
@@ -54,7 +59,55 @@ public class NotificationController {
 	System.out.println("Error SMS API"+ex.getMessage());
 	}
 	}
+*/
+	void sendSMS(String pno,String otp)
+	{
+		try {
+            String user = "freshtranss";
+            String pass = "bulk@123";
+            String sender = "SMSFRE";
+            String phone = pno;
+            String text = "Your OTP is :"+otp;
+            String priority = "ndnd";
+            String stype = "normal";
 
+            // URL encode the text parameter
+            String encodedText = URLEncoder.encode(text, "UTF-8");
+
+            // Construct the URL
+            String urlString = "https://trans.smsfresh.co/api/sendmsg.php?" +
+                    "user=" + user +
+                    "&pass=" + pass +
+                    "&sender=" + sender +
+                    "&phone=" + phone +
+                    "&text=" + encodedText +
+                    "&priority=" + priority +
+                    "&stype=" + stype;
+
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            // Get the response
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // Print the response
+            System.out.println("Response: " + response.toString());
+
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
 	public NotificationController(OtpsService otpService, EmailOTPService emailotpService) {
         this.otpsService = otpService;
         this.emailotpService = emailotpService;
@@ -62,28 +115,34 @@ public class NotificationController {
     }
 	@PostMapping("loginWithSmsOTP1/{pno}")
     public String loginWithSmsOTP1(@PathVariable String pno, HttpServletRequest request) {
-     	String message="";
-     User user=urepo.findByMobileNum(pno);
+     String message="";
+     User user=urepo.findByEmailOrMobileNumber(pno);
+     
      if(user==null)
-    	 message="Invalid Pno";
+     {
+    	 message="Sorry... You are not a registered user";    		 
+     }
      else
      {
-        Random random = new Random();
-        // Generate a random 4-digit OTP
-        int number = 1000 + random.nextInt(9000);
-        String otp = ""+number;
-        Otps otp1=new Otps(0, number, pno);
-        otpsService.saveOTP(otp1);
-       try {
-    	   sendSMS(pno, otp);
-    	   message="OTP Sent";
-       }
-       catch(Exception e) {
-    	   message=e.getMessage();
-       }
-     }
-    	return message;
-    	
+    	 Random random = new Random(); 
+    	 int number = 1000 + random.nextInt(9000);
+         String otp = ""+number;
+         Otps otp1=new Otps(0, number, pno);
+         otpsService.saveOTP(otp1);
+         try
+         {
+         if(pno.contains("@"))
+        	 emailService.sendEmail(pno, "OTP verification ", otp);        	 
+         else
+        	 sendSMS(pno, otp);
+         message="OTP Sent";
+         }
+         catch(Exception e)
+         {
+        	 message=e.getMessage();
+         }         
+     }     
+     	return message;    	
     }
     
     @PostMapping("verifySmsOTP1/{otp}/{pno}")
@@ -92,11 +151,12 @@ public class NotificationController {
 		String type="";
 		String isAdmin="";
 		Map<String, String> data = new HashMap<>();
+		
 	try {
     	int otp1= otpsService.getLatestOTPByPno(pno);
     	if(otp.equals(""+otp1)) {
-    	 User u= urepo.findByMobileNum(pno);
-    	 if (u != null) {
+    	User u= urepo.findByEmailOrMobileNumber(pno);
+    	if (u != null) {
     		 if(u.getStatus()!=1) {
     			 token_message="Unapproved User";
     			 data.put("token", token_message);
@@ -114,10 +174,16 @@ public class NotificationController {
  			data.put("token", token_message);
  			data.put("type", type);
     		 }
-    	 }else {
- 			token_message = "Invalid User information";
+    	 }
+    	else {
+ 			token_message = "Invalid Pno/Email";
  			data.put("token", token_message);
  		}
+    	}
+    	else
+    	{
+    		token_message = "Invalid OTP";
+ 			data.put("token", token_message);
     	}
     	}
     	catch(Exception e) {

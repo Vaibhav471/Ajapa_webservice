@@ -18,6 +18,6 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 	List<Event> findAllByOrderByStartDateDesc();
 	@Query("SELECT u.eventName FROM Event u WHERE u.eventId = :id")
     String findEventNameByUserId(int id);
-	List<Event>  findAllByEventStatus(int status);
-	
+	List<Event>  findAllByEventStatus(int status);	
+	List<Event> findAllByEventStatusOrderByStartDateDesc(int status);
 }

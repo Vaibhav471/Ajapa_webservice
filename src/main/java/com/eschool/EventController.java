@@ -321,7 +321,9 @@ System.out.println("Error"+ex.getMessage());
 			List<Event> events=null;
 			try
 		   {
-			 events= erepo.findAll();
+			 //events= erepo.findAll();
+			 events= erepo.findAllByOrderByStartDateDesc();
+			 
 		    if (start >= 0 && end < events.size() && start <= end) {
 		        myEvents=events.subList(start-1, end);
 		    } 
@@ -349,7 +351,8 @@ System.out.println("Error"+ex.getMessage());
 			List<Event> events=null;
 			try
 		   {
-			 events= erepo.findAllByEventStatus(status);
+			 //events= erepo.findAllByEventStatus(status);
+		     events= erepo.findAllByEventStatusOrderByStartDateDesc(status);
 		    if (start >= 0 && end < events.size() && start <= end) {
 		        myEvents=events.subList(start-1, end);
 		    } 
