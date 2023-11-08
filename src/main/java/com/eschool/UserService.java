@@ -13,15 +13,12 @@ import jakarta.persistence.Query;
 @Service
 public class UserService {
     @Autowired
-    private UserRepository urepo;
-    
+    private UserRepository urepo;    
     @PersistenceContext
-    private EntityManager entityManager;
-    
+    private EntityManager entityManager;    
     private final UserRepository userRepository;
 
 
-    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

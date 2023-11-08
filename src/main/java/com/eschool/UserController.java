@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -299,13 +300,68 @@ public String sendEmail(Notification notification) {
 
 	// -------------------TO APPROVE OR REJECT A USER'S APPLICATION TO SIGNUP----------------------------------------------------------
 
+	/*
+	@PostMapping("changePassword/{password}")
+	public ResponseEntity<Object> changePassword(@PathVariable String password,@RequestHeader("Authorization") String authorizationHeader) 
+		{
+		String message="";
+		try
+		{
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+				String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " p
+				Base64.Decoder decoder = Base64.getUrlDecoder();
+				String chunks[] = jwtToken.split("\\.");
+				String header = new String(decoder.decode(chunks[0]));
+				String payload = new String(decoder.decode(chunks[1]));
+				ObjectMapper mapper = new ObjectMapper();
+				Map<String, String> map = mapper.readValue(payload, Map.class);
+			    String email = map.get("email"); // getting email from token in a string variable
+				User u=urepo.findByEmail(email);
+				u.setPassword(password);
+				urepo.save(u);
+				message="Your password has been changed";
+			}
+		}
+		catch(Exception e)
+		{
+			message=e.getMessage();
+		}
+		
+		return new ResponseEntity<>(message, HttpStatus.OK);		
+		}
+		*/	
+	@PostMapping("changePassword")
+	public ResponseEntity<Object> changePassword(@RequestParam("password") String password,@RequestHeader("Authorization") String authorizationHeader) 
+		{
+		String message="";
+		try
+		{
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+				String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " p
+				Base64.Decoder decoder = Base64.getUrlDecoder();
+				String chunks[] = jwtToken.split("\\.");
+				String header = new String(decoder.decode(chunks[0]));
+				String payload = new String(decoder.decode(chunks[1]));
+				ObjectMapper mapper = new ObjectMapper();
+				Map<String, String> map = mapper.readValue(payload, Map.class);
+			    String email = map.get("email"); // getting email from token in a string variable
+				User u=urepo.findByEmail(email);
+				u.setPassword(password);
+				urepo.save(u);
+				message="Your password has been changed";
+			}
+		}
+		catch(Exception e)
+		{
+			message=e.getMessage();
+		}
+		
+		return new ResponseEntity<>(message, HttpStatus.OK);		
+		}
 	@PostMapping("changeStatus/{email}")
 	public ResponseEntity<Object> changeStatus(@PathVariable String email) {
-
 		String message = "";
-
 		User existingUser = urepo.findByEmail(email);
-
 		if (existingUser != null) {
 			existingUser.setStatus(1);
 			urepo.save(existingUser);
@@ -315,26 +371,18 @@ public String sendEmail(Notification notification) {
 		data.put("token", message);
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
-
 	// ----------------------------TO SAVE A USER'S IMAGE----------------------------------------------------------------------------------------------------------------
-
 	@PostMapping("saveImage")
 	public ResponseEntity<Object> saveImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String authorizationHeader) {
-
 		String email = "";
 		String message = "";
-
 		// The code to decode the JWT token sent by client
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwtToken = authorizationHeader.substring(7); // Removing "Bearer " prefix
-
 			System.out.println(jwtToken);
-
 			try {
-
 				Base64.Decoder decoder = Base64.getUrlDecoder();
 				String chunks[] = jwtToken.split("\\.");
-
 				String header = new String(decoder.decode(chunks[0]));
 				String payload = new String(decoder.decode(chunks[1]));
 

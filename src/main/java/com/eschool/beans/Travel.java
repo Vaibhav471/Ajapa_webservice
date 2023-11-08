@@ -154,7 +154,7 @@ public class Travel {
 			Date arrivalDate, String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber,
 			String arrivalTrainName, Date departureDate, String departureTime, String departureModeOfTransport,
 			String departureTrainNumber, String departureTrainName, String description, String userName, int familyId) {
-		super();
+		
 		this.travelId = travelId;
 		this.eventId = eventId;
 		this.userId = userId;

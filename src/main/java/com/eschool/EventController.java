@@ -1,9 +1,5 @@
 package com.eschool;
-
 import java.io.File;
-
-
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,11 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -190,6 +181,8 @@ System.out.println("Error"+ex.getMessage());
 			existingEvent.setStartDate(event.getStartDate());
 			existingEvent.setEventStatus(event.getEventStatus());
 			//existingEvent.setOther(event.getOther());
+			existingEvent.setLockArrivalDate(event.getLockArrivalDate());
+			existingEvent.setLockDepartureDate(event.getLockDepartureDate());
 			existingEvent.setStartTime(event.getStartTime());
 			existingEvent.setEndTime(event.getEndTime());
 
@@ -223,13 +216,9 @@ System.out.println("Error"+ex.getMessage());
 		
 		@PostMapping("saveEventD")
 		public ResponseEntity<Object> saveEventDocument(@RequestParam("file") Part file, @RequestParam("eventId") int eventId) {
-			
 			String message="";
-			System.out.println(eventId);
-
-			System.out.println(file);
-
-			
+			if(file!=null)
+			{			
 			String path=context.getRealPath("/")+"\\EventDoc";
 			File fl=new File(path);
 			if(!fl.exists())
@@ -237,33 +226,21 @@ System.out.println("Error"+ex.getMessage());
 				fl.mkdir();
 			}
 			System.out.println("Image path "+path);
-			Path root=Paths.get(path+"\\"+eventId+".jpg");
-			
-			
-			
+			Path root=Paths.get(path+"\\"+eventId+".jpg");			
 			try {
-				
 				if (Files.exists(root)) {
 			        Files.delete(root); // Delete the existing image file
-				}
-				
-				
+				}				
 				Files.copy(file.getInputStream(),root);
-				message="document saved";
-			} 
-			
+				
+			} 	
 			
 			catch (IOException e) {
 				// TODO Auto-generated catch block
-				System.out.print("Error 1"+e.getMessage());
-				
+				System.out.print("Error 1"+e.getMessage());				
 				message=e.getMessage();
 			}
-				
-				
-				
-				
-				
+			}
 			Map<String, String> data = new HashMap();
 		    data.put("message", message);
 		     return new ResponseEntity<>(data, HttpStatus.OK);		
@@ -403,15 +380,31 @@ System.out.println("Error"+ex.getMessage());
 	    	return erepo.findAllByOrderByStartDateDesc();
 	    }
 	    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    @PostMapping("deleteEvent/{eventId}")
-	    public String deleteEvent(@PathVariable int eventId) {
-	    	String message="";
-	    	
+	    
+	    @PostMapping("changeBookingStatus/{eventId}/{status}")
+	    public String changeBookingStatus(@PathVariable int eventId,@PathVariable int status) {
+	    	String message="";    	
 	    	try {
 	    	Event e=erepo.findById(eventId);
-	    	e.setEventStatus(2);
+	    	e.setBookingStatus(status);
 	    	erepo.save(e);
-	    	message="Event deketed";
+	    	message="Event Booking Status Changed";
+	    	}
+	    	catch(Exception e) {
+	    		message=e.getMessage();
+	    	}
+	    	return message;
+	    }
+	    
+	    
+	    @PostMapping("changeEventStatus/{eventId}/{status}")
+	    public String changeEventStatus(@PathVariable int eventId,@PathVariable int status) {
+	    	String message="";    	
+	    	try {
+	    	Event e=erepo.findById(eventId);
+	    	e.setEventStatus(status);
+	    	erepo.save(e);
+	    	message="Event Status Changed";
 	    	}
 	    	catch(Exception e) {
 	    		message=e.getMessage();
