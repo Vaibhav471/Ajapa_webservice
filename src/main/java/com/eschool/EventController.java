@@ -39,10 +39,8 @@ import jakarta.servlet.http.Part;
 
 @RestController
 public class EventController {	
-	
 	@Autowired
-	EventRepository erepo;
-	
+	EventRepository erepo;	
 	@Autowired
 	EventPermissionRepository eprepo;
 	
