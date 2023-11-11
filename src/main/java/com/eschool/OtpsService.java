@@ -1,13 +1,8 @@
 package com.eschool;
-
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.eschool.beans.Otps;
-
 @Service
 public class OtpsService {
 	private final OtpsRepository otpsRepository;    

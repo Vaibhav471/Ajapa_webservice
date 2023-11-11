@@ -68,18 +68,16 @@ public String sendEmail(Notification notification) {
 	@PostMapping("signup")
 	public ResponseEntity<Object> saveUser(@RequestBody User user) {
 		message="";
-		Map<String, String> data = new HashMap<>();		
-		try {
-			
+		Map<String, String> data = new HashMap<>();	
+		
+		try {			
 			if(urepo.findByEmail(user.getEmail())!=null) {
 				message="User exists";
 			}
 			else if(urepo.findByMobileNum(user.getMobileNum())!=null) {
 				message="User exists";
-
-			}
-			
-			else {
+			}			
+			else {				
 			urepo.save(user);
 			int id1 = urepo.findIdByEmail(user.getEmail());
 			System.out.println(id1);
@@ -133,12 +131,20 @@ public String sendEmail(Notification notification) {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Failed to decode JWT: " + e.getMessage());
+				return new ResponseEntity<>(data, HttpStatus.OK);
 			}
 		}		
-		
+		if(user.getEmail()==null)
+		{
+			String childEmail="child"+System.nanoTime()+"@Gmail.com";
+			user.setEmail(childEmail);
+		}
 		try {
 			if(urepo.findByEmail(user.getEmail())!=null) {
-				message="User exists";
+				message="Email already exists";
+			}
+			else if(user.getMobileNum()!=null && urepo.findByMobileNum(user.getMobileNum())!=null) {
+				message="Phone number already exists";
 			}
 			else {
 			user.setFamilyId(id);

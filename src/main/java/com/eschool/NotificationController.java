@@ -145,6 +145,57 @@ public class NotificationController {
      	return message;    	
     }
     
+	
+	@PostMapping("sendOtpEmailOrPno/{pno}/{email}")
+    public String sendOtpEmailOrPno(@PathVariable String pno,@PathVariable String email) {
+     String message="";
+     Random random = new Random(); 
+     int number = 1000 + random.nextInt(9000);
+     String otp = ""+number;
+     Otps otp1=new Otps(0, number, pno);
+     Otps otp2=new Otps(1, number, email);     
+     otpsService.saveOTP(otp1);
+     otpsService.saveOTP(otp2);
+     try
+     {     
+     emailService.sendEmail(email, "OTP verification ", otp);        	 
+     sendSMS(pno, otp);
+     message="OTP Sent";
+     }
+     catch(Exception e)
+     {
+     message=e.getMessage();
+     }         
+       
+     	return message;    	
+    }    
+	@PostMapping("verifyEmailOrPno/{otp}/{pno}")
+    public ResponseEntity<Object> verifyEmailOrPno(@PathVariable String otp, @PathVariable String pno){
+    	String token_message = "";
+		Map<String, String> data = new HashMap<>();		
+	try {
+    	int otp1= otpsService.getLatestOTPByPno(pno);
+    	if(otp.equals(""+otp1)) {
+    		token_message = "Valid OTP";    	
+    		data.put("token", token_message);
+    	}
+    	else {
+ 			token_message = "Invalid OTP";
+ 			data.put("token", token_message);
+ 		}    	
+    	}
+    	catch(Exception e) {
+    		token_message=e.getMessage();
+    		data.put("token", token_message);    		
+    	}
+    	
+		return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+	
+	
+	
+	
     @PostMapping("verifySmsOTP1/{otp}/{pno}")
     public ResponseEntity<Object> verifySmsOTP1(@PathVariable String otp, @PathVariable String pno){
     	String token_message = "";

@@ -23,12 +23,23 @@ public class User {
     String userType="member";    
     int familyId;    
     String identifier;    
-    boolean isAdmin;
+    boolean isAdmin,isDisciple;
+	
+
+	public boolean isDisciple() {
+		return isDisciple;
+	}
+
+	public void setDisciple(boolean isDisciple) {
+		this.isDisciple = isDisciple;
+	}
+
 	public User(int id, @Email(message = "Enter a valid Email address") String email, String fullName, String dob,
 			String mobileNum, String password, String gender, String bloodGrp, String occupation, String qualification,
 			String addressLinep, String addressLines, String country, String state, String city, String dikshaDt,
 			int age, String whatsappNum, double pincode, int status, String userType, int familyId, String identifier,
-			boolean isAdmin) {
+			boolean isAdmin, boolean isDisciple) {
+		
 		this.id = id;
 		this.email = email;
 		this.fullName = fullName;
@@ -53,6 +64,7 @@ public class User {
 		this.familyId = familyId;
 		this.identifier = identifier;
 		this.isAdmin = isAdmin;
+		this.isDisciple = isDisciple;
 	}
 
 	public int getId() {
