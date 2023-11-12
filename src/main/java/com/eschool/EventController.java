@@ -199,15 +199,10 @@ System.out.println("Error"+ex.getMessage());
 		//-----------------------------FETCH EVENT INFO----------------------------------------------------------------------------------------------------------
 
 		@GetMapping("fetchEvent/{ids}")
-		public Event fetchEvent( @PathVariable String ids) {
-			
-			int id=Integer.parseInt(ids);
-			
+		public Event fetchEvent( @PathVariable String ids) {			
+			int id=Integer.parseInt(ids);			
 			Event event= erepo.findById(id);
-			
-			return event;
-			
-			
+			return event;		
 		}
 		
 		//------------------------------TO SAVE EVENT RELATED DOCUMENTS-------------------------------------------------------------------------------------------------------------
@@ -242,12 +237,8 @@ System.out.println("Error"+ex.getMessage());
 			Map<String, String> data = new HashMap();
 		    data.put("message", message);
 		     return new ResponseEntity<>(data, HttpStatus.OK);		
-			}
-		
-		
-		
+			}	
 		//--------------------------------------TO GET LAST EVENT'S ID BY EMAIL OF ADMIN------------------------------------------------------------------------
-		
 		@GetMapping("getEventId/{email}")
 		public ResponseEntity<Object> getEventId(@PathVariable("email")String email){
 			

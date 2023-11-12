@@ -1,12 +1,19 @@
 package com.eschool.beans;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+@Entity
+@Table(name="attendance")
 public class Attendance {
 	@Id
+	@GeneratedValue
     private int attendanceId;
     private int eventId;
     private int userId;
-    public Attendance(int attendanceId, int eventId, int userId) {
-		this.attendanceId = attendanceId;
+    public Attendance(int eventId, int userId) {
+		
 		this.eventId = eventId;
 		this.userId = userId;
 	}
