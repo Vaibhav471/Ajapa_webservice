@@ -16,4 +16,5 @@ public interface TravelRepository extends CrudRepository<Travel, Integer> {
 	List<Travel> findAllByEventId(int id);
 	List<Travel> findAllByFamilyId(int id);	
 	List<Travel> findAllByEventIdAndFamilyId(int eventId, int familyId);
+	List<Travel> findAllByEventIdOrderByFamilyId(int eventId);
 }

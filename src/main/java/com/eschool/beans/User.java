@@ -24,7 +24,6 @@ public class User {
     int familyId;    
     String identifier;    
     boolean isAdmin,isDisciple;
-	
 
 	public boolean isDisciple() {
 		return isDisciple;

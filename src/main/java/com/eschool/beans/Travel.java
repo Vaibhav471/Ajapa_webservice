@@ -33,7 +33,14 @@ public class Travel {
     private String description;
     private String userName;    
     private int familyId;
-    public Travel() {
+    boolean attendingShivir;
+    public boolean getAttendingShivir() {
+		return attendingShivir;
+	}
+	public void setAttendingShivir(boolean attendingShivir) {
+		this.attendingShivir = attendingShivir;
+	}
+	public Travel() {
 
 	}
 	public int getTravelId() {
@@ -153,7 +160,7 @@ public class Travel {
 	public Travel(int travelId, int eventId, int userId, String fromCity, String fromState, String fromCountry,
 			Date arrivalDate, String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber,
 			String arrivalTrainName, Date departureDate, String departureTime, String departureModeOfTransport,
-			String departureTrainNumber, String departureTrainName, String description, String userName, int familyId) {
+			String departureTrainNumber, String departureTrainName, String description, String userName, int familyId,boolean attendingShivir) {
 		
 		this.travelId = travelId;
 		this.eventId = eventId;
@@ -174,6 +181,7 @@ public class Travel {
 		this.description = description;
 		this.userName = userName;
 		this.familyId = familyId;
+		this.attendingShivir=attendingShivir;
 	}
 	
 }

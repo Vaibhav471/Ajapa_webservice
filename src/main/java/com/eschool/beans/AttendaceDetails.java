@@ -6,11 +6,25 @@ public class AttendaceDetails {
 	private ArrayList<Integer> events;
 	private ArrayList<Integer> users;
 	private ArrayList<Boolean> isPresent;
-	public AttendaceDetails(ArrayList<Integer> events, ArrayList<Integer> users, ArrayList<Boolean> isPresent) {
+	private ArrayList<String> hallNo;
+	
+	
+	public AttendaceDetails(ArrayList<Integer> events, ArrayList<Integer> users, ArrayList<Boolean> isPresent,
+			ArrayList<String> hallNo) {	
 		this.events = events;
 		this.users = users;
 		this.isPresent = isPresent;
+		this.hallNo = hallNo;
 	}
+
+	public ArrayList<String> getHallNo() {
+		return hallNo;
+	}
+
+	public void setHallNo(ArrayList<String> hallNo) {
+		this.hallNo = hallNo;
+	}
+
 	public AttendaceDetails() {
 		
 	}

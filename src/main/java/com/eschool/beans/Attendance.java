@@ -12,10 +12,26 @@ public class Attendance {
     private int attendanceId;
     private int eventId;
     private int userId;
-    public Attendance(int eventId, int userId) {
+    private String hallNo;
+    private boolean present;
+	public Attendance(int eventId, int userId, String hallNo,boolean present) {
 		
 		this.eventId = eventId;
 		this.userId = userId;
+		this.hallNo = hallNo;
+		this.present=present;
+	}
+	public boolean getPresent() {
+		return present;
+	}
+	public void setPresent(boolean present) {
+		this.present = present;
+	}
+	public String getHallNo() {
+		return hallNo;
+	}
+	public void setHallNo(String hallNo) {
+		this.hallNo = hallNo;
 	}
 	public Attendance() {		
 	}

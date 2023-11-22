@@ -49,7 +49,7 @@ public class TravelController {
 	@Autowired
 	EventRepository erepo;
 	private final TravelService travelService;
-   
+	
     public TravelController(TravelService travelService) {
         this.travelService = travelService;
     }
@@ -563,9 +563,9 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
 			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());
 			teu.setDescription(tt.getDescription());
+			teu.setAttendingShivir(tt.getAttendingShivir());
 			teu.setUserName(urepo.findUserNameByUserId(tt.getUserId()));
 			teu.setEventName(erepo.findEventNameByUserId(tt.getEventId()));
-
 			t1.add(teu);
 		}
 		
@@ -596,7 +596,8 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureModeOfTransport(tt.getDepartureModeOfTransport());
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
 			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());			
-			teu.setDescription(tt.getDescription());			
+			teu.setDescription(tt.getDescription());
+			teu.setAttendingShivir(tt.getAttendingShivir());
 			User user=urepo.findById(tt.getUserId());
 			teu.setUserName(user.getFullName());
 			Event event=erepo.findById(tt.getEventId());
@@ -631,7 +632,7 @@ List<TravelEventUser> t1=new ArrayList<>();
 			teu.setDepartureTrainName(tt.getDepartureTrainName());
 			teu.setDepartureTrainNumber(tt.getDepartureTrainNumber());
 			teu.setDescription(tt.getDescription());
-			
+			teu.setAttendingShivir(tt.getAttendingShivir());
 			User user=urepo.findById(tt.getUserId());
 			teu.setUserName(user.getFullName());
 			Event event=erepo.findById(tt.getEventId());

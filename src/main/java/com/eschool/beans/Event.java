@@ -16,10 +16,8 @@ public class Event {
 	private int eventId;
 	private String eventName,eventType,eventLocation,listedBy,startTime,endTime;
 	private int eventStatus=1,bookingStatus=1;
-	Date startDate;
-	Date endDate;
-	private Date lockArrivalDate;
-	private Date lockDepartureDate;
+	private Date startDate,endDate,lockArrivalDate,lockDepartureDate,shivirStartDate,shivirEndDate;
+	private boolean shivirAvailable;	
 	public int getEventId() {
 		return eventId;
 	}
@@ -95,13 +93,11 @@ public class Event {
 	public Date getLockDepartureDate() {
 		return lockDepartureDate;
 	}
-	public void setLockDepartureDate(Date lockDepartureDate) {
-		this.lockDepartureDate = lockDepartureDate;
-	}
 	public Event(int eventId, String eventName, String eventType, String eventLocation, String listedBy,
 			String startTime, String endTime, int eventStatus, int bookingStatus, Date startDate, Date endDate,
-			Date lockArrivalDate, Date lockDepartureDate) {
-		
+			Date lockArrivalDate, Date lockDepartureDate, Date shivirStartDate, Date shivirEndDate,
+			boolean shivirAvailable) {
+	
 		this.eventId = eventId;
 		this.eventName = eventName;
 		this.eventType = eventType;
@@ -115,6 +111,32 @@ public class Event {
 		this.endDate = endDate;
 		this.lockArrivalDate = lockArrivalDate;
 		this.lockDepartureDate = lockDepartureDate;
+		this.shivirStartDate = shivirStartDate;
+		this.shivirEndDate = shivirEndDate;
+		this.shivirAvailable = shivirAvailable;
+	}
+	public void setLockDepartureDate(Date lockDepartureDate) {
+		this.lockDepartureDate = lockDepartureDate;
+	}
+	
+	
+	public boolean getShivirAvailable() {
+		return shivirAvailable;
+	}
+	public void setShivirAvailable(boolean shivirAvailable) {
+		this.shivirAvailable = shivirAvailable;
+	}
+	public Date getShivirStartDate() {
+		return shivirStartDate;
+	}
+	public void setShivirStartDate(Date shivirStartDate) {
+		this.shivirStartDate = shivirStartDate;
+	}
+	public Date getShivirEndDate() {
+		return shivirEndDate;
+	}
+	public void setShivirEndDate(Date shivirEndDate) {
+		this.shivirEndDate = shivirEndDate;
 	}
 	public Event() {
 		

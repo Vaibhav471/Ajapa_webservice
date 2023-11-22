@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eschool.beans.Attendance;
 import com.eschool.beans.EmailOTP;
 import com.eschool.beans.Notification;
 import com.eschool.beans.Otps;
+import com.eschool.beans.Travel;
 import com.eschool.beans.User;
 
 import io.jsonwebtoken.Jwts;
@@ -42,7 +44,11 @@ public class NotificationController {
 	@Autowired
     private NotificationService emailService;
 	@Autowired
-	UserRepository urepo;	
+	UserRepository urepo;
+	@Autowired
+	TravelRepository trepo;
+	@Autowired
+	AttendanceRepository arepo;
 	private final OtpsService otpsService;
 	private final EmailOTPService emailotpService;
 
@@ -83,7 +89,54 @@ public class NotificationController {
                     "&text=" + encodedText +
                     "&priority=" + priority +
                     "&stype=" + stype;
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            connection.setRequestMethod("GET");
+
+            // Get the response
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            // Print the response
+            System.out.println("Response: " + response.toString());
+
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
+	
+	void sendCustomSMS(String pno,String message)
+	{
+		try {
+            String user = "AjapaYog";
+            String pass = "123456";
+            String sender = "ASTOVD";
+            String phone = pno;
+            String text = message+" is your one time password for login Ajapa Yog Sansthan - Team Astrovedha";
+            String priority = "ndnd";
+            String stype = "normal";
+
+            // URL encode the text parameter
+            String encodedText = URLEncoder.encode(text, "UTF-8");
+
+            // Construct the URL
+            String urlString = "https://trans.smsfresh.co/api/sendmsg.php?" +
+                    "user=" + user +
+                    "&pass=" + pass +
+                    "&sender=" + sender +
+                    "&phone=" + phone +
+                    "&text=" + encodedText +
+                    "&priority=" + priority +
+                    "&stype=" + stype;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -113,11 +166,87 @@ public class NotificationController {
         this.emailotpService = emailotpService;
 
     }
+		
+	@PostMapping("sendCusmtomSMS/{eventId}/{check}/{message}")
+    public String sendCusmtomSMS(@PathVariable int eventId,@PathVariable int check,@PathVariable String message) {
+     String errorMessage="Sent";
+     List<User> users=new ArrayList<>();
+     if(check==1)
+     {
+    	List<Travel> travels=trepo.findAllByEventId(eventId);
+    	for(Travel t:travels)
+    	{
+    		User user=urepo.findById(t.getUserId());
+    		users.add(user);
+    	}
+     }
+     else if(check==2)
+     {
+    	List<Travel> travels=trepo.findAllByEventId(eventId);
+     	for(Travel t:travels)
+     	{
+     		User user=urepo.findById(t.getUserId());
+     		if(user.getUserType().equals("head"))
+     		users.add(user);
+     	}
+     }   
+     else if(check==3)
+     {
+    	List<Travel> travels=trepo.findAllByEventId(eventId);
+     	for(Travel t:travels)
+     	{     		
+     		User user=urepo.findById(t.getUserId());
+     		Attendance attendance=arepo.findByUserIdAndEventId(user.getId(), eventId);
+     		if(attendance!=null)
+     			users.add(user);
+     	}
+     }   
+     else if(check==4)
+     {
+    	List<Travel> travels=trepo.findAllByEventId(eventId);
+     	for(Travel t:travels)
+     	{     		
+     		User user=urepo.findById(t.getUserId());
+     		Attendance attendance=arepo.findByUserIdAndEventId(user.getId(), eventId);
+     		if(attendance!=null && user.getUserType().equals("head"))
+     			users.add(user);
+     	}
+     } 
+     else if(check==5)
+     {
+    	List<Travel> travels=trepo.findAllByEventId(eventId);
+     	for(Travel t:travels)
+     	{     		
+     		User user=urepo.findById(t.getUserId());
+     		if(t.getAttendingShivir()==true)
+     		users.add(user);
+     	}
+     } 
+     else if(check==6)
+     {
+    	users=urepo.findUsersByStatus(1);
+     } 
+     else if(check==7)
+     {
+    List<User> allUsers=urepo.findUsersByStatus(1);
+    for(User user:allUsers)
+    {
+    	if(user.getUserType().equals("head"))
+    		users.add(user);
+    }    	
+     }     
+     for(User user:users)
+     {
+    	 sendCustomSMS(user.getMobileNum(),message);
+     }    
+     
+     return errorMessage;    	
+    }
+	
 	@PostMapping("loginWithSmsOTP1/{pno}")
     public String loginWithSmsOTP1(@PathVariable String pno, HttpServletRequest request) {
      String message="";
-     User user=urepo.findByEmailOrMobileNumber(pno);
-     
+     User user=urepo.findByEmailOrMobileNumber(pno);     
      if(user==null)
      {
     	 message="Sorry... You are not a registered user";    		 

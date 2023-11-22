@@ -292,7 +292,7 @@ public String sendEmail(Notification notification) {
 			token_message = token;
 			data.put("token", token_message);
 			data.put("type", type);
-			data.put("isAdmin",isAdmin );
+			data.put("isAdmin",isAdmin);
 			//---------------------------------------------
 		}
 
@@ -443,7 +443,7 @@ public String sendEmail(Notification notification) {
 	
 	@GetMapping("getUsers/{start}/{end}")
 	public List<User> getUsers(@PathVariable int start, @PathVariable int end) {
-	    List<User> users = urepo.getAllUsersOrderByCountryStateCityFamilyId();
+	    List<User> users = urepo.getAllUsersOrderByFamilyIdCountryStateCity();
 	    
 	    if (start >= 0 && end <= users.size() && start <= end) {
 	        return users.subList(start, end);
@@ -498,7 +498,7 @@ public String sendEmail(Notification notification) {
 			}
 
 			
-			Map<String, String> data = new HashMap();
+			Map<String, String> data = new HashMap<>();
 			data.put("Email", email);
 			return new ResponseEntity<>(data, HttpStatus.OK);
 		}
@@ -525,7 +525,7 @@ public String sendEmail(Notification notification) {
 		@GetMapping("getAllUsersOrderByCountryStateCityFamily")
 		public List<User> getAllUsersOrderByCountryStateCityFamily(){
 			
-			return urepo.getAllUsersOrderByCountryStateCityFamilyId();
+			return urepo.getAllUsersOrderByFamilyIdCountryStateCity();
 		}
 		
 	//----------------------------TO GET USER DETAILS BY ID--------------------------------------------------------------------
@@ -601,7 +601,7 @@ public String sendEmail(Notification notification) {
 				
 				@GetMapping("getUsersByStatus/{status}/{start}/{end}")
 				public List<User> getUsersByStatus(@PathVariable int status,@PathVariable int start,@PathVariable int end){
-					List<User> users=urepo.getAllUsersByStatusOrderByCountryStateCityFamilyId(status);
+					List<User> users=urepo.getAllUsersByStatusOrderByFamilyIdCountryStateCity(status);
 					List<User> subUsers=new ArrayList<>();
 						try
 					   {
@@ -693,6 +693,25 @@ public String sendEmail(Notification notification) {
 					data.put("token", message);
 					return new ResponseEntity<>(data, HttpStatus.OK);
 				}
+	//------------------------	progress		
+				@PostMapping("changeFamilyHead/{familyId}/{userId}")
+				public ResponseEntity<Object> changeFamilyHead(@PathVariable int familyId,@PathVariable int userId) {
+					String message = "Changed";
+					List<User> users= urepo.findUsersByFamilyId(familyId);
+					for(User user:users)
+					{
+						User existingUser=urepo.findById(user.getId());
+						if(existingUser.getId()==userId)						
+							existingUser.setUserType("head");						
+						else
+							existingUser.setUserType("member");
+						urepo.save(existingUser);							
+					}
+					Map<String, String> data = new HashMap<>();
+					data.put("token", message);
+					return new ResponseEntity<>(data, HttpStatus.OK);
+				}
+		//----------------------------------------------		
 				//------------------------------------------------------------------------------------------------------------------------
 				@GetMapping("getAge/{id}")
 				public String getAge(@PathVariable int id) {

@@ -20,4 +20,5 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
     String findEventNameByUserId(int id);
 	List<Event>  findAllByEventStatus(int status);	
 	List<Event> findAllByEventStatusOrderByStartDateDesc(int status);
+
 }

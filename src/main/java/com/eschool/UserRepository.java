@@ -29,11 +29,11 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	List<User> findUsersByFamilyId(int id);
 	String findMobileNumById(int id);
 	
-	@Query("SELECT u FROM User u where status=1 order by u.country,u.state,u.city,u.familyId")
-    List<User> getAllUsersOrderByCountryStateCityFamilyId();
+	@Query("SELECT u FROM User u where status=1 order by u.familyId,u.country,u.state,u.city")
+    List<User> getAllUsersOrderByFamilyIdCountryStateCity();
 	
-	@Query("SELECT u FROM User u where u.status=:status order by u.country,u.state,u.city,u.familyId")
-    List<User> getAllUsersByStatusOrderByCountryStateCityFamilyId(@Param("status") int status);
+	@Query("SELECT u FROM User u where u.status=:status order by u.familyId,u.country,u.state,u.city")
+    List<User> getAllUsersByStatusOrderByFamilyIdCountryStateCity(@Param("status") int status);
 	
 }
 

@@ -75,7 +75,6 @@ public String sendEmail(Notification notification) {
     }
 
 public int getEventIdByEmail(String email) {
-	
 
 	String message="";
 	int eventId=0;
@@ -136,29 +135,22 @@ System.out.println("Error"+ex.getMessage());
 	
 	
 		@PostMapping("saveEvent")
-		public ResponseEntity<Object> saveEvent(@RequestBody Event event) {
-			
-			String message = "";
-			
+		public ResponseEntity<Object> saveEvent(@RequestBody Event event) {			
+			String message = "";			
 			try {
-		    Event e=erepo.save(event);
-		    
-		   
-		    
+		    erepo.save(event);	    
 			message="event created successfully";
+			System.out.println("Check"+event.getShivirAvailable());
 			}
 			catch(Exception e) {
 				message=e.getMessage();		
-				}
-			
+				}			
 			System.out.println(event.getListedBy());
-			int eventId=getEventIdByEmail(event.getListedBy());
-			
-			Map<String, String> data = new HashMap();
+			int eventId=getEventIdByEmail(event.getListedBy());			
+			Map<String, String> data = new HashMap<>();
 	        data.put("token", message);
 	        data.put("eventId",""+eventId);
-	        return new ResponseEntity<>(data, HttpStatus.OK);
-	        
+	        return new ResponseEntity<>(data, HttpStatus.OK);	        
 	        }
 		
 		
@@ -167,10 +159,8 @@ System.out.println("Error"+ex.getMessage());
 		@PutMapping("editEvent/{id}")
 		public ResponseEntity<Object> editEvent(@PathVariable int id, @RequestBody Event event){
 			
-			String message="";
-			
-			Event existingEvent = erepo.findById(id);
-			
+			String message="";			
+			Event existingEvent = erepo.findById(id);			
 			existingEvent.setEventLocation(event.getEventLocation());
 			existingEvent.setEventName(event.getEventName());
 			existingEvent.setEventType(event.getEventType());
@@ -183,14 +173,8 @@ System.out.println("Error"+ex.getMessage());
 			existingEvent.setLockDepartureDate(event.getLockDepartureDate());
 			existingEvent.setStartTime(event.getStartTime());
 			existingEvent.setEndTime(event.getEndTime());
-
-
-
-			erepo.save(existingEvent);
-			
-			
-			
-			Map<String, String> data = new HashMap();
+			erepo.save(existingEvent);				
+			Map<String, String> data = new HashMap<>();
 	        data.put("token", message);
 	         return new ResponseEntity<>(data, HttpStatus.OK);
 			

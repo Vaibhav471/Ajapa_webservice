@@ -21,6 +21,15 @@ public class TravelEventUser {
 	String departureTrainName;
 	String departureTrainNumber;
 	String description;
+	boolean attendingShivir;
+	public boolean isAttendingShivir() {
+		return attendingShivir;
+	}
+
+	public void setAttendingShivir(boolean attendingShivir) {
+		this.attendingShivir = attendingShivir;
+	}
+
 	public int getTravelId() {
 		return travelId;
 	}
@@ -183,7 +192,7 @@ public class TravelEventUser {
 			Date arrivalDate, String arrivalTime, String arrivalModeOfTransport, String arrivalTrainNumber,
 			String arrivalTrainName, Date departureDate, String departureTime, String departureModeOfTransport,
 			String departureTrainName, String departureTrainNumber, String description, String userName,
-			String eventName) {
+			String eventName,boolean attendingShivir) {
 		super();
 		this.travelId = travelId;
 		this.eventId = eventId;
@@ -204,6 +213,8 @@ public class TravelEventUser {
 		this.description = description;
 		this.userName = userName;
 		this.eventName = eventName;
+		this.attendingShivir=attendingShivir;
+		
 	}
 
 		
